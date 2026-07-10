@@ -1,0 +1,35 @@
+PLINK v1.90b7.2 64-bit (11 Dec 2023)
+Options in effect:
+  --bfile /Users/nancyh/Desktop/hartwell/TWAS/LDREF/1000G.EUR.1
+  --chr 1
+  --from-bp 1
+  --make-bed
+  --out /Users/nancyh/Desktop/asthma-prs-study-fresh/05_twas-analysis/sample_data/LDREF/1000G.EUR.1
+  --to-bp 3500000
+
+Hostname: kikusunokisMBP2
+Working directory: /Users/nancyh/Desktop/hartwell
+Start time: Wed Jul  8 23:58:06 2026
+
+Random number seed: 1783580286
+16384 MB RAM detected; reserving 8192 MB for main workspace.
+978 out of 98642 variants loaded from .bim file.
+489 people (0 males, 0 females, 489 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to
+/Users/nancyh/Desktop/asthma-prs-study-fresh/05_twas-analysis/sample_data/LDREF/1000G.EUR.1.nosex
+.
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 489 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is exactly 1.
+978 variants and 489 people pass filters and QC.
+Note: No phenotypes present.
+--make-bed to
+/Users/nancyh/Desktop/asthma-prs-study-fresh/05_twas-analysis/sample_data/LDREF/1000G.EUR.1.bed
++
+/Users/nancyh/Desktop/asthma-prs-study-fresh/05_twas-analysis/sample_data/LDREF/1000G.EUR.1.bim
++
+/Users/nancyh/Desktop/asthma-prs-study-fresh/05_twas-analysis/sample_data/LDREF/1000G.EUR.1.fam
+... done.
+
+End time: Wed Jul  8 23:58:06 2026

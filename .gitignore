@@ -1,0 +1,18 @@
+01_meta-analysis/.DS_Store
+
+# Python / figure-build artifacts
+__pycache__/
+*.pyc
+# TWAS .dat aggregation cache (build_twas_overview.py)
+.twas_cache/
+07_focus-finemapping/figures/.twas_cache/
+
+# nbconvert --execute runner byproducts
+*.executed.ipynb
+
+# run_demo.sh working dirs (regenerated on every run; expected_outputs/ are committed)
+demo_run/
+0*/demo_run/
+
+# individual-level data — backed up privately to HN020719/asthma_backup, never commit
+09_ptrs-unified_model-evaluation/data/

@@ -1,0 +1,12 @@
+other_model,mean_AUC_A,mean_AUC_B,delta_AUC_rank1_minus_other,P_one_sided
+PRS-CS alone (PRS+PCs),0.632,0.4913,0.1407,0.0
+Unified ct + PRS-CS — Random Forest (tuned),0.632,0.5031,0.1289,0.0
+PRS-CSx alone (PRS+PCs),0.632,0.5135,0.1185,0.03
+Unified PTRS ct — Gradient Boosting,0.632,0.5257,0.1063,0.01
+Unified tissue + PRS-CS — Random Forest (tuned),0.632,0.5302,0.1018,0.01
+Unified PTRS tissue — RF (GridSearch),0.632,0.5498,0.0822,0.06
+Unified ct + PRS-CSx — Gradient Boosting (tuned),0.632,0.5538,0.0782,0.04
+Unified tissue + PRS-CSx — Gradient Boosting (tuned),0.632,0.5626,0.0694,0.06
+FOCUS ct — cd4_naive (Gradient Boosting),0.632,0.5786,0.0534,0.07
+FOCUS tissue — Esophagus_Mucosa (Gradient Boosting),0.632,0.5964,0.0356,0.13
+Cross-modal + PRS-CS — Random Forest (tuned),0.632,0.6266,0.0054,0.33

@@ -1,0 +1,271 @@
+Term,Observed,Direction,Fold_Enrichment,P_value,FDR
+positive regulation of macromolecule metabolic process (GO:0010604),150,+,1.99,7.67e-18,1.11e-13
+cellular process (GO:0009987),442,+,1.19,6.36e-17,4.63e-13
+positive regulation of metabolic process (GO:0009893),155,+,1.86,7.84e-16,3.8e-12
+positive regulation of macromolecule biosynthetic process (GO:0010557),125,+,2.03,2.8e-15,1.02e-11
+positive regulation of biosynthetic process (GO:0009891),125,+,1.94,9.28e-14,2.7e-10
+gene expression (GO:0010467),118,+,1.93,1.08e-12,1.97e-09
+primary metabolic process (GO:0044238),235,+,1.47,1.36e-12,1.97e-09
+macromolecule metabolic process (GO:0043170),200,+,1.56,1.29e-12,2.08e-09
+positive regulation of cellular process (GO:0048522),212,+,1.53,1.05e-12,2.17e-09
+lymphocyte differentiation (GO:0030098),32,+,4.55,9.51e-13,2.3e-09
+mRNA metabolic process (GO:0016071),48,+,3.15,2.13e-12,2.57e-09
+lymphocyte activation (GO:0046649),42,+,3.49,2.08e-12,2.74e-09
+positive regulation of biological process (GO:0048518),219,+,1.49,5.37e-12,6e-09
+mononuclear cell differentiation (GO:1903131),35,+,3.85,1.03e-11,1.07e-08
+metabolic process (GO:0008152),254,+,1.4,1.17e-11,1.14e-08
+leukocyte differentiation (GO:0002521),37,+,3.54,3.16e-11,2.87e-08
+hemopoiesis (GO:0030097),49,+,2.87,3.59e-11,3.07e-08
+cell activation (GO:0001775),50,+,2.76,9.32e-11,7.52e-08
+RNA metabolic process (GO:0016070),78,+,2.16,1.01e-10,7.71e-08
+nucleobase-containing compound metabolic process (GO:0006139),116,+,1.79,2.17e-10,1.5e-07
+T cell activation (GO:0042110),31,+,3.81,2.15e-10,1.56e-07
+positive regulation of RNA metabolic process (GO:0051254),87,+,2.0,3.06e-10,2.02e-07
+biological_process (GO:0008150),464,+,1.1,3.24e-10,2.05e-07
+macromolecule biosynthetic process (GO:0009059),122,+,1.74,3.74e-10,2.09e-07
+regulation of macromolecule metabolic process (GO:0060255),201,+,1.47,3.62e-10,2.1e-07
+regulation of immune system process (GO:0002682),81,+,2.05,4.14e-10,2.23e-07
+positive regulation of gene expression (GO:0010628),65,+,2.27,5.79e-10,3e-07
+leukocyte activation (GO:0045321),43,+,2.87,6.52e-10,3.27e-07
+negative regulation of cellular process (GO:0048523),185,+,1.49,7.93e-10,3.84e-07
+regulation of metabolic process (GO:0019222),212,+,1.41,2.06e-09,9.64e-07
+T cell differentiation (GO:0030217),22,+,4.65,2.43e-09,1.1e-06
+negative regulation of biological process (GO:0048519),189,+,1.45,3.72e-09,1.64e-06
+mRNA processing (GO:0006397),35,+,3.09,4.1e-09,1.75e-06
+RNA biosynthetic process (GO:0032774),68,+,2.13,4.21e-09,1.75e-06
+RNA splicing (GO:0008380),31,+,3.34,5.13e-09,2.07e-06
+nucleobase-containing compound biosynthetic process (GO:0034654),80,+,1.95,7.12e-09,2.72e-06
+regulation of response to stimulus (GO:0048583),153,+,1.54,7.1e-09,2.79e-06
+positive regulation of immune system process (GO:0002684),56,+,2.26,1.35e-08,5.03e-06
+biosynthetic process (GO:0009058),147,+,1.54,1.65e-08,6e-06
+immune system process (GO:0002376),101,+,1.74,2.41e-08,8.34e-06
+cytoplasmic translation (GO:0002181),17,+,5.28,2.4e-08,8.5e-06
+regulation of macromolecule biosynthetic process (GO:0010556),175,+,1.45,2.61e-08,8.82e-06
+regulation of gene expression (GO:0010468),172,+,1.46,2.8e-08,9.24e-06
+nucleic acid metabolic process (GO:0090304),92,+,1.78,3.63e-08,1.17e-05
+regulation of protein metabolic process (GO:0051246),72,+,1.96,4.24e-08,1.28e-05
+nucleic acid biosynthetic process (GO:0141187),68,+,2.0,4.17e-08,1.29e-05
+response to cytokine (GO:0034097),49,+,2.34,4.12e-08,1.3e-05
+post-transcriptional regulation of gene expression (GO:0010608),35,+,2.79,5.5e-08,1.63e-05
+response to peptide (GO:1901652),49,+,2.3,6.04e-08,1.76e-05
+RNA processing (GO:0006396),49,+,2.29,6.77e-08,1.93e-05
+regulation of translation (GO:0006417),28,+,3.18,8.16e-08,2.28e-05
+regulation of RNA stability (GO:0043487),20,+,4.06,1.25e-07,3.42e-05
+cellular component organization or biogenesis (GO:0071840),197,+,1.37,1.5e-07,4.03e-05
+negative regulation of protein metabolic process (GO:0051248),35,+,2.66,1.68e-07,4.44e-05
+positive regulation of DNA-templated transcription (GO:0045893),75,+,1.86,1.75e-07,4.54e-05
+positive regulation of RNA biosynthetic process (GO:1902680),75,+,1.85,1.79e-07,4.57e-05
+regulation of mRNA stability (GO:0043488),19,+,4.14,1.93e-07,4.83e-05
+"RNA splicing, via transesterification reactions (GO:0000375)",23,+,3.51,2.11e-07,5.2e-05
+negative regulation of macromolecule metabolic process (GO:0010605),103,+,1.65,2.17e-07,5.26e-05
+regulation of biosynthetic process (GO:0009889),176,+,1.41,2.25e-07,5.28e-05
+regulation of primary metabolic process (GO:0080090),175,+,1.41,2.23e-07,5.31e-05
+regulation of mRNA metabolic process (GO:1903311),26,+,3.17,2.6e-07,6e-05
+regulation of mRNA catabolic process (GO:0061013),20,+,3.84,3.11e-07,7.05e-05
+regulation of leukocyte activation (GO:0002694),36,+,2.52,4.19e-07,9.36e-05
+regulation of antigen receptor-mediated signaling pathway (GO:0050854),12,+,6.18,4.97e-07,0.000109
+"RNA splicing, via transesterification reactions with bulged adenosine as nucleophile (GO:0000377)",22,+,3.42,6.06e-07,0.00013
+"mRNA splicing, via spliceosome (GO:0000398)",22,+,3.42,6.06e-07,0.000131
+regulation of signal transduction (GO:0009966),117,+,1.55,6.72e-07,0.000142
+positive regulation of transcription by RNA polymerase II (GO:0045944),59,+,1.96,7.67e-07,0.000159
+negative regulation of metabolic process (GO:0009892),108,+,1.59,8.01e-07,0.000164
+cellular response to cytokine stimulus (GO:0071345),42,+,2.27,8.56e-07,0.000173
+regulation of leukocyte cell-cell adhesion (GO:1903037),27,+,2.89,9.34e-07,0.000186
+cellular component organization (GO:0016043),188,+,1.36,9.5e-07,0.000187
+"regulation of nuclear-transcribed mRNA catabolic process, deadenylation-dependent decay (GO:1900151)",7,+,12.33,9.72e-07,0.000188
+protein metabolic process (GO:0019538),120,+,1.53,9.99e-07,0.000191
+positive regulation of leukocyte cell-cell adhesion (GO:1903039),22,+,3.31,1.05e-06,0.000191
+supramolecular fiber organization (GO:0097435),34,+,2.5,1.02e-06,0.000192
+positive regulation of T cell activation (GO:0050870),21,+,3.43,1.05e-06,0.000193
+positive regulation of response to stimulus (GO:0048584),92,+,1.66,1.04e-06,0.000195
+positive regulation of hemopoiesis (GO:1903708),18,+,3.84,1.21e-06,0.000214
+positive regulation of leukocyte differentiation (GO:1902107),18,+,3.84,1.21e-06,0.000217
+regulation of response to stress (GO:0080134),65,+,1.85,1.31e-06,0.00023
+cellular localization (GO:0051641),79,+,1.73,1.35e-06,0.000234
+intracellular signal transduction (GO:0035556),73,+,1.77,1.41e-06,0.00024
+alpha-beta T cell activation (GO:0046631),14,+,4.77,1.45e-06,0.000245
+regulation of T cell activation (GO:0050863),27,+,2.82,1.51e-06,0.000249
+regulation of cell activation (GO:0050865),37,+,2.36,1.5e-06,0.00025
+negative regulation of intracellular signal transduction (GO:1902532),40,+,2.27,1.62e-06,0.000264
+actin filament organization (GO:0007015),22,+,3.22,1.67e-06,0.000267
+regulation of lymphocyte activation (GO:0051249),32,+,2.53,1.66e-06,0.000269
+response to stimulus (GO:0050896),249,+,1.26,1.72e-06,0.000272
+programmed cell death (GO:0012501),49,+,2.05,2.02e-06,0.000315
+regulation of T cell receptor signaling pathway (GO:0050856),10,+,6.71,2.09e-06,0.000323
+negative regulation of macromolecule biosynthetic process (GO:0010558),88,+,1.65,2.25e-06,0.000341
+cell death (GO:0008219),49,+,2.04,2.23e-06,0.000341
+protein targeting (GO:0006605),19,+,3.52,2.28e-06,0.000341
+catabolic process (GO:0009056),84,+,1.67,2.36e-06,0.000347
+positive regulation of antigen receptor-mediated signaling pathway (GO:0050857),7,+,10.96,2.34e-06,0.000348
+positive regulation of cell adhesion (GO:0045785),30,+,2.58,2.49e-06,0.000362
+translation (GO:0006412),26,+,2.79,2.84e-06,0.000401
+protein biosynthetic process (GO:0160307),26,+,2.79,2.84e-06,0.000405
+negative regulation of signal transduction (GO:0009968),62,+,1.85,2.83e-06,0.000407
+regulation of nucleobase-containing compound metabolic process (GO:0019219),137,+,1.45,3.19e-06,0.000441
+negative regulation of biosynthetic process (GO:0009890),90,+,1.63,3.15e-06,0.000441
+establishment of protein localization (GO:0045184),59,+,1.88,3.36e-06,0.000461
+regulation of cellular process (GO:0050794),323,+,1.18,3.6e-06,0.000488
+regulation of RNA metabolic process (GO:0051252),128,+,1.46,3.93e-06,0.000529
+biological regulation (GO:0065007),342,+,1.17,4.09e-06,0.000546
+T cell differentiation involved in immune response (GO:0002292),10,+,6.21,4.27e-06,0.000564
+negative regulation of translation (GO:0017148),14,+,4.35,4.37e-06,0.000572
+organelle organization (GO:0006996),112,+,1.5,5.46e-06,0.000709
+positive regulation of cell-cell adhesion (GO:0022409),23,+,2.9,5.56e-06,0.000715
+regulation of hemopoiesis (GO:1903706),27,+,2.62,5.98e-06,0.000762
+macromolecule catabolic process (GO:0009057),52,+,1.92,7.83e-06,0.00099
+"positive regulation of nuclear-transcribed mRNA catabolic process, deadenylation-dependent decay (GO:1900153)",5,+,16.25,8e-06,0.000993
+regulation of intracellular signal transduction (GO:1902531),80,+,1.64,7.95e-06,0.000996
+alpha-beta T cell differentiation (GO:0046632),11,+,5.16,8.99e-06,0.00111
+protein-containing complex assembly (GO:0065003),58,+,1.83,9.36e-06,0.00114
+regulation of programmed cell death (GO:0043067),64,+,1.77,9.87e-06,0.00119
+regulation of apoptotic process (GO:0042981),62,+,1.78,1.04e-05,0.00125
+mRNA stabilization (GO:0048255),10,+,5.56,1.18e-05,0.00141
+regulation of leukocyte differentiation (GO:1902105),23,+,2.76,1.24e-05,0.00146
+regulation of defense response (GO:0031347),43,+,2.04,1.26e-05,0.00146
+regulation of immune response (GO:0050776),48,+,1.96,1.24e-05,0.00147
+negative regulation of signaling (GO:0023057),63,+,1.76,1.33e-05,0.00151
+regulation of cell adhesion (GO:0030155),40,+,2.1,1.34e-05,0.00151
+regulation of signaling (GO:0023051),124,+,1.44,1.36e-05,0.00152
+negative regulation of cell communication (GO:0010648),63,+,1.76,1.33e-05,0.00153
+regulation of cell communication (GO:0010646),124,+,1.44,1.4e-05,0.00155
+regulation of biological process (GO:0050789),330,+,1.16,1.45e-05,0.00159
+positive regulation of mRNA metabolic process (GO:1903313),13,+,4.16,1.55e-05,0.00169
+cellular response to stimulus (GO:0051716),198,+,1.29,1.65e-05,0.00179
+protein-containing complex organization (GO:0043933),62,+,1.75,1.78e-05,0.00189
+cellular component biogenesis (GO:0044085),101,+,1.51,1.77e-05,0.0019
+alpha-beta T cell differentiation involved in immune response (GO:0002293),9,+,5.94,1.87e-05,0.00197
+alpha-beta T cell activation involved in immune response (GO:0002287),9,+,5.85,2.13e-05,0.00223
+regulation of cell-cell adhesion (GO:0022407),29,+,2.37,2.15e-05,0.00223
+negative regulation of intracellular protein transport (GO:0090317),7,+,7.99,2.21e-05,0.00228
+positive regulation of cytokine production (GO:0001819),29,+,2.35,2.39e-05,0.00244
+nuclear-transcribed mRNA catabolic process (GO:0000956),12,+,4.26,2.58e-05,0.00263
+actin cytoskeleton organization (GO:0030036),30,+,2.29,2.64e-05,0.00267
+positive regulation of leukocyte activation (GO:0002696),23,+,2.63,2.75e-05,0.00275
+regulation of localization (GO:0032879),77,+,1.61,2.82e-05,0.0028
+apoptotic process (GO:0006915),44,+,1.93,2.97e-05,0.00293
+small GTPase-mediated signal transduction (GO:0007264),19,+,2.92,3.3e-05,0.0032
+establishment of protein localization to membrane (GO:0090150),17,+,3.15,3.28e-05,0.0032
+regulation of catabolic process (GO:0009894),48,+,1.86,3.42e-05,0.00329
+T cell activation involved in immune response (GO:0002286),11,+,4.47,3.58e-05,0.00342
+establishment of localization in cell (GO:0051649),63,+,1.68,4.64e-05,0.00435
+RNA stabilization (GO:0043489),10,+,4.75,4.8e-05,0.00441
+negative regulation of post-translational protein modification (GO:1901874),10,+,4.75,4.8e-05,0.00444
+nucleobase-containing compound catabolic process (GO:0034655),23,+,2.53,4.88e-05,0.00446
+negative regulation of mRNA catabolic process (GO:1902373),10,+,4.75,4.8e-05,0.00447
+response to stress (GO:0006950),121,+,1.41,5.22e-05,0.00474
+regulation of lymphocyte differentiation (GO:0045619),17,+,3.03,5.34e-05,0.00482
+negative regulation of intracellular transport (GO:0032387),8,+,5.93,5.54e-05,0.00497
+positive regulation of lymphocyte activation (GO:0051251),21,+,2.64,5.63e-05,0.00502
+positive regulation of cell activation (GO:0050867),23,+,2.51,5.71e-05,0.00506
+negative regulation of gene expression (GO:0010629),48,+,1.82,6.4e-05,0.00564
+cellular component assembly (GO:0022607),91,+,1.49,7.34e-05,0.00643
+positive regulation of protein metabolic process (GO:0051247),38,+,1.98,7.39e-05,0.00643
+RNA catabolic process (GO:0006401),16,+,3.07,7.47e-05,0.00646
+negative regulation of response to stimulus (GO:0048585),68,+,1.62,7.6e-05,0.00654
+positive regulation of multicellular organismal process (GO:0051240),66,+,1.64,7.91e-05,0.00676
+myeloid cell differentiation (GO:0030099),20,+,2.65,8.07e-05,0.00686
+positive regulation of T cell receptor signaling pathway (GO:0050862),5,+,10.56,8.4e-05,0.0071
+immune response-activating signaling pathway (GO:0002757),21,+,2.56,8.55e-05,0.00714
+negative regulation of immune system process (GO:0002683),29,+,2.21,8.52e-05,0.00716
+"CD4-positive, alpha-beta T cell activation (GO:0035710)",9,+,4.88,9.27e-05,0.0077
+positive regulation of cell communication (GO:0010647),69,+,1.59,0.000102,0.00836
+positive regulation of signaling (GO:0023056),69,+,1.59,0.000103,0.00838
+Arp2/3 complex-mediated actin nucleation (GO:0034314),5,+,10.06,0.000108,0.00878
+T-helper cell differentiation (GO:0042093),8,+,5.37,0.000115,0.00917
+T cell receptor signaling pathway (GO:0050852),11,+,3.94,0.000114,0.00922
+"CD4-positive, alpha-beta T cell differentiation involved in immune response (GO:0002294)",8,+,5.37,0.000115,0.00922
+B cell differentiation (GO:0030183),11,+,3.91,0.000123,0.00979
+negative regulation of myoblast fusion (GO:1901740),7,+,6.16,0.000127,0.01
+actin filament-based process (GO:0030029),31,+,2.09,0.000133,0.0104
+positive regulation of signal transduction (GO:0009967),63,+,1.62,0.000132,0.0104
+regulation of synaptic vesicle endocytosis (GO:1900242),5,+,9.6,0.000137,0.0106
+mRNA catabolic process (GO:0006402),12,+,3.6,0.000136,0.0106
+negative regulation of syncytium formation by plasma membrane fusion (GO:0034242),7,+,6.04,0.000145,0.0111
+positive regulation of T cell differentiation (GO:0045582),11,+,3.81,0.000154,0.0118
+response to tumor necrosis factor (GO:0034612),13,+,3.31,0.000168,0.0126
+negative regulation of RNA catabolic process (GO:1902369),10,+,4.1,0.000166,0.0126
+negative regulation of mRNA metabolic process (GO:1903312),11,+,3.78,0.000166,0.0126
+regulation of endocytosis (GO:0030100),19,+,2.58,0.000169,0.0127
+regulation of pattern recognition receptor signaling pathway (GO:0062207),14,+,3.13,0.000171,0.0128
+localization (GO:0051179),144,+,1.32,0.000175,0.0129
+intracellular signaling cassette (GO:0141124),36,+,1.93,0.000175,0.013
+negative regulation of protein modification by small protein conjugation or removal (GO:1903321),9,+,4.47,0.000181,0.0133
+positive regulation of nuclear-transcribed mRNA poly(A) tail shortening (GO:0060213),4,+,13.0,0.000187,0.0134
+generation of precursor metabolites and energy (GO:0006091),21,+,2.42,0.000186,0.0134
+protein-RNA complex organization (GO:0071826),16,+,2.84,0.000186,0.0135
+negative regulation of nucleobase-containing compound metabolic process (GO:0045934),63,+,1.61,0.000186,0.0135
+immune response-regulating signaling pathway (GO:0002764),23,+,2.33,0.000209,0.0148
+purine nucleotide metabolic process (GO:0006163),21,+,2.4,0.000208,0.0148
+negative regulation of RNA metabolic process (GO:0051253),59,+,1.63,0.000215,0.0152
+protein localization to organelle (GO:0033365),33,+,1.97,0.000221,0.0155
+intracellular protein localization (GO:0008104),69,+,1.56,0.000226,0.0158
+localization within membrane (GO:0051668),29,+,2.11,0.000229,0.0159
+regulation of protein localization to nucleus (GO:1900180),12,+,3.4,0.000228,0.0159
+negative regulation of molecular function (GO:0044092),18,+,2.6,0.000232,0.016
+regulation of cytokine production (GO:0001817),37,+,1.89,0.000241,0.0165
+positive regulation of mRNA catabolic process (GO:0061014),10,+,3.91,0.000245,0.0167
+establishment of localization (GO:0051234),127,+,1.35,0.000246,0.0167
+nucleic acid catabolic process (GO:0141188),16,+,2.76,0.000259,0.0175
+intracellular transport (GO:0046907),51,+,1.69,0.000265,0.0178
+positive regulation of cell development (GO:0010720),23,+,2.26,0.00029,0.0194
+"CD4-positive, alpha-beta T cell differentiation (GO:0043367)",8,+,4.7,0.000295,0.0196
+establishment of protein localization to organelle (GO:0072594),20,+,2.4,0.000299,0.0198
+regulation of protein localization (GO:0032880),39,+,1.82,0.000303,0.0199
+positive regulation of immune response (GO:0050778),32,+,1.95,0.000315,0.0207
+negative regulation of protein ubiquitination (GO:0031397),8,+,4.63,0.000324,0.0211
+protein targeting to ER (GO:0045047),6,+,6.34,0.00033,0.0213
+regulation of cytoplasmic translation (GO:2000765),6,+,6.34,0.00033,0.0214
+apoptotic signaling pathway (GO:0097190),18,+,2.52,0.000335,0.0216
+negative regulation of protein localization (GO:1903828),14,+,2.93,0.00034,0.0218
+regulation of nuclear-transcribed mRNA poly(A) tail shortening (GO:0060211),4,+,11.27,0.000344,0.0219
+ribonucleoprotein complex biogenesis (GO:0022613),25,+,2.18,0.000353,0.0224
+aerobic respiration (GO:0009060),14,+,2.91,0.000358,0.0226
+regulation of T cell differentiation (GO:0045580),14,+,2.9,0.000376,0.0237
+regulation of synaptic vesicle recycling (GO:1903421),5,+,7.83,0.000381,0.0239
+protein-RNA complex assembly (GO:0022618),15,+,2.77,0.000387,0.0241
+maintenance of location in cell (GO:0051651),8,+,4.51,0.000391,0.0243
+regulation of inflammatory response (GO:0050727),23,+,2.2,0.000395,0.0244
+regulation of innate immune response (GO:0045088),25,+,2.15,0.000398,0.0245
+cellular respiration (GO:0045333),15,+,2.76,0.000405,0.0248
+regulation of intracellular transport (GO:0032386),17,+,2.56,0.00041,0.0249
+regulation of nucleocytoplasmic transport (GO:0046822),10,+,3.67,0.000408,0.0249
+lymphocyte activation involved in immune response (GO:0002285),12,+,3.19,0.000415,0.025
+regulation of transport (GO:0051049),60,+,1.58,0.000423,0.0253
+negative regulation of catabolic process (GO:0009895),21,+,2.33,0.00042,0.0253
+electron transport chain (GO:0022900),10,+,3.64,0.000437,0.0258
+regulation of cytokine-mediated signaling pathway (GO:0001959),13,+,3.0,0.000434,0.0258
+negative regulation of protein modification process (GO:0031400),14,+,2.86,0.000435,0.0258
+mitotic cell cycle (GO:0000278),28,+,2.02,0.000446,0.0262
+P-body assembly (GO:0033962),4,+,10.56,0.00045,0.0263
+positive regulation of lymphocyte differentiation (GO:0045621),11,+,3.37,0.00045,0.0263
+positive regulation of lamellipodium assembly (GO:0010592),5,+,7.55,0.000455,0.0265
+positive regulation of extrinsic apoptotic signaling pathway (GO:2001238),7,+,5.01,0.000469,0.0272
+regulation of viral process (GO:0050792),11,+,3.34,0.000479,0.0276
+negative regulation of NF-kappaB transcription factor activity (GO:0032088),6,+,5.9,0.000494,0.0284
+regulation of cellular component organization (GO:0051128),87,+,1.43,0.000507,0.029
+regulation of extrinsic apoptotic signaling pathway (GO:2001236),12,+,3.11,0.000519,0.0296
+actin nucleation (GO:0045010),5,+,7.29,0.00054,0.0306
+purine-containing compound metabolic process (GO:0072521),25,+,2.08,0.000545,0.0308
+establishment of protein localization to endoplasmic reticulum (GO:0072599),6,+,5.76,0.000561,0.0313
+negative regulation of protein K48-linked deubiquitination (GO:1903094),2,+,42.26,0.000559,0.0315
+regulation of type I interferon-mediated signaling pathway (GO:0060338),6,+,5.76,0.000561,0.0315
+positive regulation of cytoplasmic translation (GO:2000767),4,+,9.94,0.000577,0.0321
+regulation of viral genome replication (GO:0045069),8,+,4.23,0.000606,0.0336
+negative regulation of nucleocytoplasmic transport (GO:0046823),5,+,7.04,0.000635,0.0351
+positive regulation of apoptotic signaling pathway (GO:2001235),11,+,3.23,0.000645,0.0355
+positive regulation of acute inflammatory response to antigenic stimulus (GO:0002866),3,+,15.85,0.000675,0.0369
+negative regulation of p38MAPK cascade (GO:1903753),3,+,15.85,0.000675,0.037
+purine ribonucleotide metabolic process (GO:0009150),17,+,2.44,0.000684,0.0372
+positive regulation of viral genome replication (GO:0045070),5,+,6.82,0.000743,0.0403
+regulation of response to cytokine stimulus (GO:0060759),13,+,2.83,0.000752,0.0407
+protein catabolic process (GO:0030163),36,+,1.79,0.000761,0.0409
+regulation of myoblast fusion (GO:1901739),7,+,4.62,0.000772,0.0414
+macromolecule localization (GO:0033036),79,+,1.44,0.000809,0.0432
+activation of immune response (GO:0002253),21,+,2.17,0.000856,0.0456
+regulation of response to external stimulus (GO:0032101),45,+,1.66,0.000888,0.0471
+definitive hemopoiesis (GO:0060216),4,+,8.9,0.000905,0.0478
+maintenance of location (GO:0051235),8,+,3.98,0.000907,0.0478
+regulation of cell development (GO:0060284),35,+,1.79,0.000934,0.0488
+regulation of apoptotic signaling pathway (GO:2001233),20,+,2.21,0.000936,0.0488
+respiratory electron transport chain (GO:0022904),9,+,3.59,0.000933,0.0489
+positive regulation of defense response (GO:0031349),23,+,2.09,0.000949,0.0493

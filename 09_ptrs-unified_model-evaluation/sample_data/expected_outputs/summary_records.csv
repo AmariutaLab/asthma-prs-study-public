@@ -1,0 +1,5 @@
+Model,CAMP_bal_AUC,AUC_std,OR_per_SD,dAUC_vs_PRS
+Cross-modal + PRS (LR),0.8372,0.0412,3.884,0.1604
+Cross-modal + PRS (RF),0.7975,0.0459,2.988,0.1207
+"Cross-modal PTRS (no PRS, RF)",0.7606,0.0492,2.448,0.0838
+PRS alone,0.6768,0.0516,1.977,0.0

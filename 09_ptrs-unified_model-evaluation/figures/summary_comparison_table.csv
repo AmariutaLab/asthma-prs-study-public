@@ -1,0 +1,12 @@
+Category,Features,P_VAL,Classifier,CAMP_Balanced_AUC,AUC_std,Delta_AUC
+PRS-CS (altPRS),-,-,Logistic Regression (PRS + Ancestry PCs),0.4913,0.0311,-0.0222
+PRS-CSx (altPRS),-,-,Logistic Regression (PRS + Ancestry PCs),0.5135,0.0305,0.0
+"PTRS-Esophagus_Mucosa (tissue, MA-FOCUS, single feature)",Esophagus_Mucosa,1,Gradient Boosting,0.5964,0.0353,0.0828
+"PTRS-cd4_naive (CT, MA-FOCUS, single feature)",cd4_naive,1,Gradient Boosting,0.5786,0.0344,0.0651
+"PTRS-Spleen (tissue, TWAS P+T, single feature)",Spleen,5e-05,Ridge (C=0.01),0.573,0.0318,0.0595
+"PTRS-nk_cd56bright (CT, TWAS P+T, single feature)",nk_cd56bright,0_005,Ridge (C=0.01),0.5437,0.0334,0.0302
+"Unified PTRS tissue (MA-FOCUS, meta-model)","Esophagus_Muscularis, Esophagus_Mucosa, Skin_Not_Sun_Exposed_Suprapubic, Adipose_Subcutaneous, Pituitary, Minor_Salivary_Gland, Artery_Aorta, Adrenal_Gland",1,RF (GridSearch),0.5498,0.0308,0.0363
+"Unified PTRS CT (MA-FOCUS, meta-model)","cd4_naive, cd8_tcm, cd4_ctl",1,Gradient Boosting,0.5257,0.0362,0.0121
+"Per-feature OOF PTRS (cross-modal, best alone)","cd4_naive, Esophagus_Mucosa",1,cd4_naive OOF,0.5914,0.034,0.0779
+"Cross-modal + PRS-CS (Direct integration, altPRS)","cd4_naive, Esophagus_Mucosa",1,Random Forest (tuned),0.6266,0.0387,0.1131
+"Cross-modal + PRS-CSx (Direct integration, altPRS)","cd4_naive, Esophagus_Mucosa",1,Random Forest (tuned),0.632,0.0399,0.1185

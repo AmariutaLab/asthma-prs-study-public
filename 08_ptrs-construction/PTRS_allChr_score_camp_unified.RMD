@@ -1,0 +1,211 @@
+---
+title: "PTRS all-chromosome score concat — external CAMP cohorts (unified tissue / cell-type)"
+output: html_document
+---
+
+Single parameterized RMD covering both external evaluation cohorts:
+
+- `MODEL_VERSION = "tissue"` → 39 GTEx bulk-tissue PTRS on **CAMP+1KG**
+  (fam: `CAMP_onek1k_chr1.fam`)
+- `MODEL_VERSION = "ct"`     → 17 OneK1K cell-type PTRS on **CAMP+GTEx**
+  (fam: `CAMP_GTEX_chr1.fam`)
+
+This file concatenates per-chromosome PTRS scores across chromosomes 1-22 for
+each feature, merges with the cohort's phenotype, and writes the per-feature
+CSVs consumed by the unified notebooks (`05_*`):
+
+- `combine/data/1/ptrs_results-concat_39_camp_1k1k/<tissue>_results.csv`
+- `combine/data/1/ptrs_results-concat_17CT_camp_gtex/<cell_type>_results.csv`
+
+It also writes the cohort phenotype to
+`combine/data/updated_pheno_camp_<suffix>.txt`.
+
+Flip `MODEL_VERSION` in the first chunk and re-knit to produce the other variant.
+
+## 0. Config — flip `MODEL_VERSION` and re-run
+
+```{r}
+MODEL_VERSION <- "tissue"   # "tissue" or "ct"
+stopifnot(MODEL_VERSION %in% c("tissue", "ct"))
+
+CONFIG <- list(
+  tissue = list(
+    feature_label       = "tissue",
+    feature_count_tag   = "39",
+    feature_set_label   = "39 GTEx tissues",
+    feature_source      = "${REPO_ROOT}/twas_path_table_39.csv",
+    feature_source_type = "csv",   # "csv" → column 'tissue', or "listdir"
+    base_dir            = "${REPO_ROOT}/outputs_39_focus_camp_1k1k",
+    fam_file            = "${REPO_ROOT}/CAMP_onek1k_chr1.fam",
+    pheno_out           = "${REPO_ROOT}/data/updated_pheno_camp_1k1k.txt",
+    out_suffix          = "ptrs_results-concat_39_camp_1k1k",
+    external_label      = "CAMP+1KG"
+  ),
+  ct = list(
+    feature_label       = "cell_type",
+    feature_count_tag   = "17CT",
+    feature_set_label   = "17 OneK1K cell types",
+    feature_source      = "${REPO_ROOT}/outputs_17CT_focus_camp_gtex/1",
+    feature_source_type = "listdir",
+    base_dir            = "${REPO_ROOT}/outputs_17CT_focus_camp_gtex",
+    fam_file            = "${REPO_ROOT}/CAMP_GTEX_chr1.fam",
+    pheno_out           = "${REPO_ROOT}/data/updated_pheno_camp_gtex.txt",
+    out_suffix          = "ptrs_results-concat_17CT_camp_gtex",
+    external_label      = "CAMP+GTEx"
+  )
+)
+cfg <- CONFIG[[MODEL_VERSION]]
+cat(sprintf("MODEL_VERSION = %s  (%s, external cohort = %s)\n",
+            MODEL_VERSION, cfg$feature_set_label, cfg$external_label))
+```
+
+## 1. Libraries + helper
+
+```{r}
+library(data.table)
+library(glmnet)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(purrr)
+
+process_data <- function(merged_data, vector_type) {
+  data <- data.frame(
+    prediction = merged_data[[vector_type]],
+    asthma     = merged_data[["asthma"]]
+  )
+  group1 <- data$prediction[data$asthma == 1]
+  group2 <- data$prediction[data$asthma == 0]
+  t_test_result <- t.test(group1, group2)
+  list(
+    p_value = t_test_result$p.value,
+    mean_x  = mean(group1, na.rm = TRUE),
+    mean_y  = mean(group2, na.rm = TRUE)
+  )
+}
+```
+
+## 2. Build the feature list and per-feature input directories
+
+```{r}
+p_val <- "1"
+chromosomes <- 1:22
+
+features <- if (cfg$feature_source_type == "csv") {
+  tbl <- fread(cfg$feature_source)
+  sort(unique(tbl$tissue))
+} else {
+  sort(list.dirs(cfg$feature_source, recursive = FALSE, full.names = FALSE))
+}
+cat(sprintf("Loaded %d %s(s)\n", length(features), cfg$feature_label))
+
+directories <- lapply(features, function(f) {
+  path <- file.path(cfg$base_dir, p_val, f)
+  if (!dir.exists(path)) dir.create(path, recursive = TRUE)
+  path
+})
+names(directories) <- features
+```
+
+## 3. Load external cohort phenotype from fam (V6: 2=case, 1=control)
+
+```{r}
+fam <- read.table(cfg$fam_file, header = FALSE)
+colnames(fam) <- c("V1", "V2", "V3", "V4", "V5", "V6")
+fam$IID_base <- sub("_.*", "", fam$V2)
+fam$asthma <- ifelse(fam$V6 == 2, 1, ifelse(fam$V6 == 1, 0, NA))
+
+cat("asthma label distribution:\n")
+print(table(fam$asthma, useNA = "ifany"))
+
+write.table(
+  fam,
+  file = cfg$pheno_out,
+  quote = FALSE, sep = " ", row.names = FALSE, col.names = TRUE
+)
+cat(sprintf("Wrote pheno -> %s\n", cfg$pheno_out))
+```
+
+## 4. Concat per-chromosome PTRS scores per feature, save merged CSVs
+
+```{r}
+pheno <- fread(cfg$pheno_out)
+
+results_table <- data.frame(
+  Tissue_Type = character(),
+  Vector_Type = character(),
+  Version     = character(),
+  P_Value     = numeric(),
+  Mean_X      = numeric(),
+  Mean_Y      = numeric(),
+  stringsAsFactors = FALSE
+)
+
+for (feat in names(directories)) {
+  keep_vector    <- NULL
+  sign_vector    <- NULL
+  without_vector <- NULL
+  keep_data      <- NULL  # holds last-read RDS for IID after chr loop
+
+  for (chr in chromosomes) {
+    directory    <- directories[[feat]]
+    keep_file    <- paste0(directory, "/chr", chr, "_", feat, "_all_data_keep.rds")
+    sign_file    <- paste0(directory, "/chr", chr, "_", feat, "_all_data_sign.rds")
+    without_file <- paste0(directory, "/chr", chr, "_", feat, "_all_data.rds")
+
+    if (file.exists(keep_file)) {
+      keep_data <- readRDS(keep_file)
+      if (is.null(keep_data)) { print(paste0(feat, chr)); next }
+      keep_vector <- if (is.null(keep_vector)) keep_data$SCORE else keep_vector + keep_data$SCORE
+    } else { print(paste0(feat, chr)); next }
+
+    if (file.exists(sign_file)) {
+      sign_data <- readRDS(sign_file)
+      sign_vector <- if (is.null(sign_vector)) sign_data$SCORE else sign_vector + sign_data$SCORE
+    } else { print(paste0(feat, chr)); next }
+
+    if (file.exists(without_file)) {
+      without_data <- readRDS(without_file)
+      without_vector <- if (is.null(without_vector)) without_data$SCORE else without_vector + without_data$SCORE
+    } else { print(paste0(feat, chr)); next }
+  }
+
+  if (is.null(keep_vector) || is.null(sign_vector) || is.null(without_vector)) {
+    cat("Skipping", feat, "- no valid chromosome data\n"); next
+  }
+
+  sample_id <- keep_data$IID
+  if (!(length(sample_id) == length(keep_vector) &&
+        length(keep_vector) == length(sign_vector) &&
+        length(sign_vector) == length(without_vector))) {
+    cat("Skipping", feat, "- mismatched vector lengths\n"); next
+  }
+
+  combined_data <- data.frame(
+    Sample_ID      = sample_id,
+    Keep_Vector    = keep_vector,
+    Sign_Vector    = sign_vector,
+    Without_Vector = without_vector
+  )
+  merged_data <- merge(combined_data, pheno, by.x = "Sample_ID", by.y = "V2", all.x = TRUE)
+
+  out_dir <- paste0(
+    "${REPO_ROOT}/data/",
+    p_val, "/", cfg$out_suffix
+  )
+  if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
+  write.csv(merged_data, file.path(out_dir, paste0(feat, "_results.csv")), row.names = FALSE)
+
+  for (vt in c("Keep", "Sign", "Without")) {
+    vt_col <- paste0(vt, "_Vector")
+    org <- process_data(merged_data, vt_col)
+    results_table <- rbind(results_table,
+      data.frame(Tissue_Type = feat, Vector_Type = vt, Version = "Original",
+                 P_Value = org$p_value, Mean_X = org$mean_x, Mean_Y = org$mean_y))
+  }
+}
+
+cat(sprintf("\nDone. External cohort = %s. Per-feature CSVs in:\n  combine/data/%s/%s/\n",
+            cfg$external_label, p_val, cfg$out_suffix))
+print(results_table)
+```
