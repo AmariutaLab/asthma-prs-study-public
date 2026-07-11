@@ -24,10 +24,7 @@ OUT_PDF = FIGDIR / 'Figure4.pdf'
 # otherwise fall back to the macOS Quick Look thumbnail (which may show z-order
 # / text-overlap artifacts that aren't actually in your slide).
 PANEL_A_CANDIDATES = [
-    FIGDIR / 'panel_A.png',                        # user-curated export — highest priority
-    FIGDIR / 'slide1_export.png',                  # preferred name
-    FIGDIR / 'figure4_editable_fix.pptx.png',      # what PowerPoint defaults to
-    Path('/tmp/panel_a_capture/figure4_editable_fix.pptx.png'),   # QL fallback
+    FIGDIR / 'panelA.png',                         # curated Panel A — the only source we use
 ]
 PANEL_A_PNG = None
 for cand in PANEL_A_CANDIDATES:

@@ -42,6 +42,13 @@ matplotlib.rcParams['legend.title_fontsize'] = 12
 sns.set_theme(style='whitegrid', context='paper', font_scale=1.0)
 CB = sns.color_palette('colorblind')
 
+# --- Panel-A-consistent model-class palette (bars only; fonts stay black) ---
+CLASS_COLORS = {'PRS':'#7fbf7b','TWAS':'#f0a860','FOCUS':'#e6c84e','UNI':'#a99bd0','XM':'#7aa9db'}
+def class_color(key):
+    for pre,cls in (('TWAS','TWAS'),('FOCUS','FOCUS'),('PRS_','PRS'),('UNI_','UNI'),('XM_','XM')):
+        if key.startswith(pre): return CLASS_COLORS[cls]
+    return CLASS_COLORS['TWAS']
+
 ROOT = Path('/Users/nancyh/Desktop/hartwell/gene_model/score/combine')
 PRED = ROOT / 'data' / 'predictions'
 FIGDIR = ROOT / 'figures'
@@ -83,7 +90,83 @@ def load_consistent(path):
     raise ValueError(f'unknown format: {path}')
 
 
-def load_prs(method, eval_set='CAMP-only (OneK1K)', config='PRS + Ancestry PCs'):
+# ---- Dynamic anchor resolvers ----
+# The figure previously hard-coded a per-sample prediction path for each
+# TWAS-P+T and MA-FOCUS anchor (feature + classifier [+ p-value]). When the
+# upstream best-classifier pick changed (e.g. cd4_naive: RF-GridSearch ->
+# Gradient Boosting), the hard-coded paths went stale, so Figure 4 and
+# Supplementary Table S7 disagreed for the same anchor.
+#
+# These resolvers pick the classifier (and, for TWAS P+T, the p-value
+# threshold) from `best_valid_per_feature.csv` at run time, so Figure 4
+# tracks whatever S7 tracks.
+import re as _re
+
+
+def _safe_model_name(m):
+    return _re.sub(r'[^A-Za-z0-9_]+', '_', str(m)).strip('_')
+
+
+def _resolve_predictions(pred_dir, feature, model):
+    """Locate the CAMP-only per-sample prediction CSV for
+    (feature, model) under `pred_dir/predictions/`.
+
+    Handles safe-name mangling variants ("Ridge (C=0.01)" -> "Ridge_C_0_01" etc.).
+    Also falls back to the multi-cohort long-format file (filtering
+    cohort == 'CAMP_only' downstream in load_consistent)."""
+    safe = _safe_model_name(model)
+    candidates = [
+        pred_dir / 'predictions' / f'best_consistent__{feature}__{safe}__CAMP_only.csv',
+        pred_dir / 'predictions' / f'best_consistent__{feature}__{safe}.csv',
+    ]
+    for c in candidates:
+        if c.exists(): return c
+    # Last-ditch glob (handles minor safe-name variants)
+    hits = list((pred_dir / 'predictions').glob(f'best_consistent__{feature}__*__CAMP_only.csv'))
+    if hits:
+        return hits[0]
+    raise FileNotFoundError(f'No CAMP-only prediction file for {feature} / {model} under {pred_dir}/predictions/')
+
+
+def resolve_focus_anchor(mv, feature):
+    """Look up the CURRENT best classifier for a MA-FOCUS anchor feature via
+    best_valid_per_feature.csv, return the CAMP-only per-sample path."""
+    bv = pd.read_csv(PRED / f'meta_model_{mv}' / 'best_valid_per_feature.csv')
+    row = bv[bv['Feature'] == feature]
+    if row.empty:
+        raise ValueError(f'{feature} not in meta_model_{mv}/best_valid_per_feature.csv')
+    row = row.iloc[0]
+    model = row['Model']
+    path = _resolve_predictions(PRED / f'meta_model_{mv}', feature, model)
+    print(f'  FOCUS {mv} anchor={feature} -> classifier={model} (AUC={row["CAMP_ONLY_BAL_AUC"]:.4f}) [{path.name}]')
+    return path
+
+
+def resolve_twas_pt_anchor(mv, feature, pvs=('5e-05', '5e-04', '0_005', '0_05')):
+    """Sweep all TWAS P+T p-value dirs; pick the pval whose
+    best_valid_per_feature.csv gives the HIGHEST CAMP_ONLY_BAL_AUC for
+    `feature`. Return the CAMP-only per-sample path."""
+    best = None
+    for pv in pvs:
+        d = PRED / f'meta_model_{mv}__pval-{pv}'
+        bv_path = d / 'best_valid_per_feature.csv'
+        if not bv_path.exists(): continue
+        bv = pd.read_csv(bv_path)
+        m = bv[bv['Feature'] == feature]
+        if m.empty: continue
+        r = m.iloc[0]
+        auc = float(r['CAMP_ONLY_BAL_AUC'])
+        if best is None or auc > best['auc']:
+            best = {'auc': auc, 'pv': pv, 'model': r['Model'], 'dir': d}
+    if best is None:
+        raise ValueError(f'{feature} not in any meta_model_{mv}__pval-*/best_valid_per_feature.csv')
+    path = _resolve_predictions(best['dir'], feature, best['model'])
+    print(f'  TWAS P+T {mv} anchor={feature} -> pval={best["pv"]}, '
+          f'classifier={best["model"]} (AUC={best["auc"]:.4f}) [{path.name}]')
+    return path
+
+
+def load_prs(method, eval_set='CAMP-only', config='PRS + Ancestry PCs'):
     prs = pd.read_csv(PRED / 'prscs_evaluation' / 'prs_predictions.csv')
     sub = prs[(prs['method'] == method) & (prs['eval_set'] == eval_set) & (prs['config'] == config)]
     return sub['score'].values, sub['y_true'].astype(int).values
@@ -113,22 +196,19 @@ uc_s, uc_y = load_unified('ct')
 xm_cs_s, xm_cs_y   = load_crossmodal('PRS-CS')
 xm_csx_s, xm_csx_y = load_crossmodal('PRS-CSx')
 
+print("\n---- Resolving anchor classifiers from current best_valid_per_feature.csv ----")
 models = [
     ('TWAS Tissue\n(Spleen)',
-     *load_consistent(PRED / 'meta_model_tissue__pval-0_05' / 'predictions'
-                      / 'best_consistent__Spleen__Ridge_C_0_01__CAMP_only.csv'),
+     *load_consistent(resolve_twas_pt_anchor('tissue', 'Spleen')),
      'r1', 0, 'TWAS_T'),
     ('TWAS Celltype\n' + r'(CD56$^{\mathrm{bright}}$ NK)',
-     *load_consistent(PRED / 'meta_model_ct__pval-0_005' / 'predictions'
-                      / 'best_consistent__nk_cd56bright__Ridge_C_0_01__CAMP_only.csv'),
+     *load_consistent(resolve_twas_pt_anchor('ct', 'nk_cd56bright')),
      'r1', 1, 'TWAS_CT'),
     ('MA-FOCUS Tissue\n(Esophagus Mucosa)',
-     *load_consistent(PRED / 'meta_model_tissue' / 'predictions'
-                      / 'best_consistent__Esophagus_Mucosa__Gradient_Boosting.csv'),
+     *load_consistent(resolve_focus_anchor('tissue', 'Esophagus_Mucosa')),
      'r1', 2, 'FOCUS_T'),
     ('MA-FOCUS Celltype\n' + r'(CD4$^+$ Naive T)',
-     *load_consistent(PRED / 'meta_model_ct' / 'predictions'
-                      / 'best_consistent__cd4_naive__RF_GridSearch__CAMP_only.csv'),
+     *load_consistent(resolve_focus_anchor('ct', 'cd4_naive')),
      'r1', 3, 'FOCUS_CT'),
     ('PRS-CS\n(default)',     *load_prs('PRS-CS'),     'r2', 0, 'PRS_CS'),
     ('PRS-CSx\n(default)',    *load_prs('PRS-CSx'),    'r2', 1, 'PRS_CSx'),
@@ -184,74 +264,6 @@ for i in range(n_models):
         pval[i, j] = (diff <= 0).mean()
 
 
-# ============================================================================ A
-figA, axA = plt.subplots(figsize=(13, 3.2))
-figA.subplots_adjust(top=0.83)
-axA.set_xlim(0, 100); axA.set_ylim(0, 30); axA.axis('off')
-
-
-def styled_box(ax, x, y, w, h, title, subtitle, methods, color, alpha=0.25, title_color='black'):
-    rect = mpatches.FancyBboxPatch((x, y), w, h, boxstyle='round,pad=0.4',
-                                   linewidth=1.2, edgecolor=color, facecolor=color, alpha=alpha)
-    ax.add_patch(rect)
-    if subtitle:
-        ax.text(x + w/2, y + h * 0.82, title, ha='center', va='center',
-                fontsize=12, fontweight='bold', color=title_color)
-        ax.text(x + w/2, y + h * 0.58, subtitle, ha='center', va='center',
-                fontsize=10, style='italic', color='dimgray')
-        ax.text(x + w/2, y + h * 0.25, methods, ha='center', va='center',
-                fontsize=10, color='black')
-    else:
-        ax.text(x + w/2, y + h * 0.78, title, ha='center', va='center',
-                fontsize=12, fontweight='bold', color=title_color)
-        ax.text(x + w/2, y + h * 0.32, methods, ha='center', va='center',
-                fontsize=10, color='black')
-
-
-BY, BH = 11, 11
-styled_box(axA, 4, BY, 13, BH,
-           title='Gene level', subtitle='(single feature PTRS)',
-           methods='TWAS P+T\nMA-FOCUS', color=CB[2])
-styled_box(axA, 22, BY, 17, BH,
-           title='Within modality', subtitle='(unified PTRS)',
-           methods='Random Forest over shortlist\n(Feature Pass 2-stage evaluation)',
-           color=CB[2])
-styled_box(axA, 44, BY, 15, BH,
-           title='Cross-modal anchors', subtitle='',
-           methods='Cell-type (cd4_naive)\n+\nTissue (Esophagus_Mucosa)',
-           color=CB[3])
-axA.text(61.5, 16.5, '+', ha='center', va='center', fontsize=15, fontweight='bold')
-styled_box(axA, 64, BY, 9, BH,
-           title='Variant level', subtitle='',
-           methods='PRS-CS\nPRS-CSx', color=CB[0])
-styled_box(axA, 78, BY, 12, BH,
-           title='Multi-modal', subtitle='(integrated classifier)',
-           methods='Random Forest', color=CB[1], alpha=0.45)
-
-ar = dict(arrowstyle='->', lw=1.4, color='black')
-axA.annotate('', xy=(21, 16.5), xytext=(18, 16.5), arrowprops=ar)
-axA.annotate('', xy=(43, 16.5), xytext=(40, 16.5), arrowprops=ar)
-axA.annotate('', xy=(77, 16.5), xytext=(74, 16.5), arrowprops=ar)
-
-axA.text(4, 4, 'Evaluation: CAMP-Balanced (64 cases x 64 controls x 100 bootstrap iterations)',
-         ha='left', va='center', fontsize=10, style='italic', color='gray')
-
-color_handles = [
-    mpatches.Patch(facecolor=CB[2], alpha=0.30, edgecolor=CB[2], label='PTRS'),
-    mpatches.Patch(facecolor=CB[3], alpha=0.30, edgecolor=CB[3], label='Cross-modal anchors'),
-    mpatches.Patch(facecolor=CB[0], alpha=0.30, edgecolor=CB[0], label='Variant-level PRS'),
-    mpatches.Patch(facecolor=CB[1], alpha=0.50, edgecolor=CB[1], label='Multi-modal integrated'),
-]
-axA.legend(handles=color_handles, loc='center right', ncol=4,
-           bbox_to_anchor=(0.94, 0.135), bbox_transform=axA.transAxes,
-           fontsize=9, frameon=True, framealpha=0.95,
-           handlelength=1.2, handletextpad=0.3, columnspacing=1.4, borderpad=0.3)
-
-panel_label(figA, 'A', 'Model construction and evaluation overview')
-figA.savefig(FIGDIR / 'figure4_panelA_schematic.png', dpi=200, bbox_inches='tight')
-figA.savefig(FIGDIR / 'figure4_panelA_schematic.pdf', bbox_inches='tight')
-plt.close(figA)
-print("Saved Panel A")
 
 
 # ============================================================================ B
@@ -472,12 +484,7 @@ or_hi_sorted   = or_hi[order]
 class_colors_sorted = []
 for i in order:
     key = models[i][5]
-    if key.startswith('TWAS'):    class_colors_sorted.append(CB[7])
-    elif key.startswith('FOCUS'): class_colors_sorted.append(CB[2])
-    elif key.startswith('PRS_'):  class_colors_sorted.append(CB[0])
-    elif key.startswith('UNI_'):  class_colors_sorted.append(CB[5])
-    elif key.startswith('XM_'):   class_colors_sorted.append(CB[3])
-    else:                         class_colors_sorted.append(CB[7])
+    class_colors_sorted.append(class_color(key))
 
 y_pos = np.arange(n_models)
 or_his_clipped = np.minimum(or_hi_sorted, 15)
