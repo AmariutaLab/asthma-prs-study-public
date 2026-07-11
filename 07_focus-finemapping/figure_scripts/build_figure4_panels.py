@@ -9,6 +9,7 @@ This iteration:
               bar-color legend moved to caption); per-bar 'OR = X.XX' text removed
               (also covered by caption). Keeps x-axis label + model tick labels.
 """
+import os
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -49,7 +50,7 @@ def class_color(key):
         if key.startswith(pre): return CLASS_COLORS[cls]
     return CLASS_COLORS['TWAS']
 
-ROOT = Path('/Users/nancyh/Desktop/hartwell/gene_model/score/combine')
+ROOT = Path(os.environ.get('FIG4_ROOT', '/Users/nancyh/Desktop/hartwell/gene_model/score/combine'))  # override with FIG4_ROOT env var
 PRED = ROOT / 'data' / 'predictions'
 FIGDIR = ROOT / 'figures'
 FIGDIR.mkdir(parents=True, exist_ok=True)
@@ -283,12 +284,32 @@ def _sig_parts(p):
     return f'P = {p:.3f}', '*'
 
 
-def violin_row(ax, row_models, fig, show_legend=True, violin_width=0.97):
+def violin_row(ax, row_models, fig, show_legend=True, violin_width=0.97,
+               standardize='zscore'):
+    """Split-violin case-vs-control panel.
+
+    `standardize`:
+      'zscore' — Per-model z-standardization: for each model, subtract the
+                 pooled (cases + controls) mean and divide by the pooled SD
+                 before plotting. Every violin ends up centered at 0 with unit
+                 spread, so classifier-specific score compression / expansion
+                 no longer distorts the visual comparison. The Welch t-test
+                 P-value is scale-invariant, so significance annotations are
+                 unchanged; AUC annotations are also unaffected (they come
+                 from the paired bootstrap on the raw scores).
+      'raw'    — Plot the raw predicted probability of asthma on a shared
+                 [0, 1] axis (legacy behavior).
+    """
     rows, labels = [], []
     for m in row_models:
         label, scores, y_true, _, _, _ = m
-        for s, y in zip(scores, y_true):
-            rows.append({'value': s, 'class': 'Case' if y == 1 else 'Control', 'model': label})
+        sc = np.asarray(scores, dtype=float)
+        if standardize == 'zscore':
+            mu = sc.mean()
+            sd = sc.std(ddof=0) or 1.0  # guard against constant-prediction models
+            sc = (sc - mu) / sd
+        for s, y in zip(sc, y_true):
+            rows.append({'value': float(s), 'class': 'Case' if y == 1 else 'Control', 'model': label})
         labels.append(label)
     df = pd.DataFrame(rows)
     sns.violinplot(data=df, x='model', y='value', hue='class', split=True, inner='quartile',
@@ -301,7 +322,10 @@ def violin_row(ax, row_models, fig, show_legend=True, violin_width=0.97):
     if _default_leg is not None:
         _default_leg.remove()
     ax.set_xlabel('')
-    ax.set_ylabel('Predicted probability of asthma', fontsize=13)
+    if standardize == 'zscore':
+        ax.set_ylabel('Standardized predicted probability (z)', fontsize=13)
+    else:
+        ax.set_ylabel('Predicted probability of asthma', fontsize=13)
     ax.set_xlim(-0.55, len(row_models) - 0.45)
     if show_legend:
         # Option B — one horizontal strip with ONLY the visual keys that appear
@@ -337,21 +361,29 @@ def violin_row(ax, row_models, fig, show_legend=True, violin_width=0.97):
         leg = ax.get_legend()
         if leg is not None: leg.remove()
 
-    # No bracket; p-value and * combined into a single inline string.
-    # Just two annotation rows above each violin: [AUC label] | [p-value + *].
-    # y_pval is pulled down to ~1.015 — the p-value text now sits effectively
-    # flush against the top of the violin, leaving only a hairline gap.
-    ax.set_ylim(0.0, 1.18)
-    ax.set_yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
-    ax.set_yticklabels(['0', '0.2', '0.4', '0.6', '0.8', '1.0'])
-    span    = 1.18
-    y_auc   = 1.14
-    y_pval  = 0.95  # sits in the upper region of the violin envelope
+    # Per-panel y-limits + annotation heights. In z-space, ~99% of data
+    # sits inside [-3, +3], so we anchor the plot from -3.5 to +3.5 and
+    # place AUC/P annotations in a headroom band above the violins.
+    if standardize == 'zscore':
+        ax.set_ylim(-3.8, 5.6)
+        ax.set_yticks([-3, -2, -1, 0, 1, 2, 3])
+        ax.set_yticklabels(['-3', '-2', '-1', '0', '1', '2', '3'])
+        y_auc  = 5.20    # AUC bounding-box top (fits inside the -3.8..5.6 axis)
+        y_pval = 3.85    # P-value line just above the highest expected violin
+    else:
+        # Raw predicted-probability axis (legacy).
+        ax.set_ylim(0.0, 1.18)
+        ax.set_yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+        ax.set_yticklabels(['0', '0.2', '0.4', '0.6', '0.8', '1.0'])
+        y_auc  = 1.14
+        y_pval = 0.95
     for k, m in enumerate(row_models):
         _, scores, y_true, _, _, _ = m
         scores = np.asarray(scores); y_true = np.asarray(y_true).astype(int)
         case_v = scores[y_true == 1]; ctrl_v = scores[y_true == 0]
         if len(case_v) > 0 and len(ctrl_v) > 0:
+            # Welch P is scale-invariant — computing it on raw scores is
+            # equivalent to computing it on z-scored scores.
             _, p = ttest_ind(case_v, ctrl_v, equal_var=False, nan_policy='omit')
         else:
             p = np.nan
@@ -389,7 +421,8 @@ _PANEL_B_ORDER = ['PRS_CS', 'PRS_CSx',
                   'XM_CS',   'XM_CSx']
 _model_by_key = {m[5]: m for m in models}
 all_violin_models = [_model_by_key[k] for k in _PANEL_B_ORDER]
-violin_row(ax_b, all_violin_models, figB, show_legend=True, violin_width=0.80)
+violin_row(ax_b, all_violin_models, figB, show_legend=True,
+           violin_width=0.95, standardize='zscore')
 # In-figure title removed for Panel B — the slide-level title in PPT carries it.
 # Keep panel_label off for B/C/D so the embedded SVG has only data.
 # panel_label(figB, 'B', 'Predicted-probability distributions on CAMP-Balanced')

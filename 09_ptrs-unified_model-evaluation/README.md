@@ -65,8 +65,11 @@ Four notebooks chain together to build and evaluate the integrated model:
    strategies" section — Stacking-Tuned is intentionally omitted).
 
 A fifth notebook, **`summary_table_and_plots.ipynb`**, reads the saved
-predictions from all four and produces the comparison table + violin plots +
-Figure-4C pairwise-P table.
+predictions from all four and produces the cross-category comparison table
+(`summary_comparison_table.csv`), consumed by `build_supplementary_tables.py`.
+(Its former violin + pairwise-P outputs were removed — those figures are now
+built by the Figure 4 pipeline in
+[`07_focus-finemapping/figure_scripts/`](../07_focus-finemapping/figure_scripts/).)
 
 ## Notebooks
 
@@ -77,7 +80,7 @@ Figure-4C pairwise-P table.
 | `prscs_evaluation.ipynb` | PRS-CS / PRS-CSx evaluation with train / val / test split; hard-coded to altPRS configs (PRS-CS ϕ=auto, PRS-CSx ϕ=auto/META); saves per-sample predictions to `data/predictions/prscs_evaluation/prs_predictions.csv` |
 | `integrated_ptrs_prs_unified.ipynb` | **Cross-modal `cd4_naive + Esophagus_Mucosa` integrated with PRS via per-feature OOF transform + Direct integration**; 6 model-based classifiers (LR · Elastic Net CV · RF tuned · GB tuned · SVM linear · Stacking-Fixed LR+RF+GB) + Rank Addition = 7 total, matching Methods "Integration strategies". Stacking-Tuned is intentionally omitted. Evaluated on **CAMP-only Balanced 64v64 × 100 bootstrap** (no external cohort). |
 | `integrated_ptrs_prs_unified_unimodal.ipynb` | **Uni-modal unified PTRS + PRS** integration. `MODEL_VERSION ∈ {'tissue', 'ct'}` switch in cell 0 selects the modality; runs the same 7-classifier zoo + Direct (PRS-only) baseline on the matched `consistent_features` shortlist for that modality, integrated with PRS-CS / PRS-CSx (altPRS). Writes per-modality results under `data/predictions/integrated_ptrs_prs_{tissue,ct}/`. Rank-1 uni-modal rows now use altPRS + 7-classifier grid to match cross-modal. |
-| `summary_table_and_plots.ipynb` | Cross-category comparison table + CAMP-only case/control violin plots + Figure-4C pairwise-P table (`summary_pairwise_vs_rank1.csv`), ranked by CAMP-only Balanced AUC |
+| `summary_table_and_plots.ipynb` | Cross-category comparison table (`summary_comparison_table.csv`), ranked by CAMP-only Balanced AUC; consumed by `build_supplementary_tables.py`. (Obsolete violin + pairwise-P plotting removed — see the Figure 4 pipeline.) |
 | `feature_count_ablation.py` | **Feature-count ablation** for the cross-modal architecture. Tests whether adding a third consistent-shortlist feature to the 2-feature anchor pair (cd4_naive + Esophagus_Mucosa) + PRS improves CAMP-Balanced AUC. Candidate list is read dynamically from `consistent_features.csv` — currently 9 candidates (7 GTEx tissues + 2 OneK1K cell types), 18 three-feature experiments × 2 PRS variants. Uses the paper's full 108-combo RF grid by default (`--reduced-grid` for a fast sanity check). Writes results and log to `data/predictions/feature_ablation/`. Reproduces the manuscript's directional claim: adding a 3rd feature drops CAMP-Balanced AUC in **18/18** experiments (mean ΔAUC = −0.031). |
 | `compute_pairwise_bootstrap_pvalue.py` | **Pairwise bootstrap ΔAUC + one-sided P** helper. Reconstructs the 100-iteration CAMP-Balanced AUC series for each of 12 Figure-4B/4C models using the same `np.random.RandomState(i)` case-subsampling the notebooks use, then emits every ordered pair to `data/predictions/pairwise_comparisons/pairwise_bootstrap_auc.csv` (132 rows), plus the raw `per_iteration_auc_matrix.csv` (100 × 12) and per-model `model_mean_auc.csv`. Reproduces the paper's cited `P = 0.13` for Cross-modal + PRS-CSx RF vs Esophagus_Mucosa GB. |
 
@@ -92,8 +95,9 @@ Direct (PRS-CSx) + Random Forest (tuned)
   OR           = 3.55
 ```
 
-`summary_table_and_plots.ipynb` writes `figures/summary_pairwise_vs_rank1.csv`
-— the 11 head-to-head bootstrap comparisons anchored on this rank-1 model:
+The Figure-4C pairwise bootstrap comparisons anchored on this rank-1 model
+(computed by `07_focus-finemapping/figure_scripts/build_figure4_panels.py`,
+Panel C):
 
 | Comparison | ΔAUC | one-sided P |
 |---|---|---|
@@ -123,7 +127,7 @@ Direct (PRS-CSx) + Random Forest (tuned)
   (`feature_count_ablation.py`, 9 candidates × 2 PRS variants, full 108-combo
   RF grid). Mean ΔAUC = −0.031. More features → more dilution.
 
-## Summary table & figures (`summary_table_and_plots.ipynb`)
+## Summary comparison table (`summary_table_and_plots.ipynb`)
 
 Reads the saved prediction CSVs under `data/predictions/` and writes to `figures/`:
 
@@ -131,17 +135,13 @@ Reads the saved prediction CSVs under `data/predictions/` and writes to `figures
   PRS-CSx only, best MA-FOCUS single-feature PTRS, best TWAS P+T
   single-feature PTRS, unified PTRS per modality, cross-modal integrated)
   with classifier, CAMP-only Balanced AUC, and ΔAUC vs the PRS-CSx baseline.
-- `summary_violin1_prs_ptrs.{png,pdf}` — CAMP-only case/control
-  predicted-probability violins for PRS and best single-feature PTRS
-  (TWAS P+T).
-- `summary_violin2_crossmodal.{png,pdf}` — same for MA-FOCUS single-feature
-  PTRS, cross-modal per-feature OOF, and the integrated PRS + PTRS rank-1
-  models. Each violin is annotated with the case-vs-control t-test p-value
-  and balanced AUC.
-- `summary_pairwise_vs_rank1.csv` — Figure-4C-style head-to-head bootstrap
-  comparisons of the rank-1 model (Cross-modal + PRS-CSx RF) against every
-  other Figure 4B/C model; reads
-  `data/predictions/pairwise_comparisons/pairwise_bootstrap_auc.csv`.
+  Consumed by `build_supplementary_tables.py`.
+
+> The notebook's former plotting half (`summary_violin1_prs_ptrs`,
+> `summary_violin2_crossmodal`, and `summary_pairwise_vs_rank1.csv`) has been
+> **removed** — those figures never entered the manuscript and are superseded by
+> the Figure 4 pipeline (`build_figure4_panels.py` renders the violins as Panel B
+> and the pairwise-P as Panel C).
 
 Run from this folder — `ROOT = Path.cwd()` resolves all relative paths.
 

@@ -13,10 +13,11 @@ Layout rules:
     ~6 pt at Cell 6.85-inch print width — author can scale up later if needed)
   * Output: Figure4.pdf, 300 dpi
 """
+import os
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
-FIGDIR = Path('/Users/nancyh/Desktop/hartwell/gene_model/score/combine/figures')
+FIGDIR = Path(os.environ.get('FIG4_ROOT', '/Users/nancyh/Desktop/hartwell/gene_model/score/combine')) / 'figures'  # override with FIG4_ROOT env var
 OUT_PDF = FIGDIR / 'Figure4.pdf'
 
 # --- Sources ----------------------------------------------------------------
