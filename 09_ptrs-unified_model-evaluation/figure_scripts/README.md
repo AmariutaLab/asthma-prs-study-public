@@ -1,9 +1,12 @@
 # Figure 4 — build scripts
 
 Scripts that render the manuscript's **Figure 4** (integrated PRS + PTRS model
-evaluation). Rendered outputs live in [`../figures/`](../figures/); the
-per-sample prediction inputs are in [`../data/predictions/`](../data/) (this
-module).
+evaluation). Rendered outputs live in [`../figures/`](../figures/). The
+per-sample prediction **inputs** (`../data/predictions/`) are **individual-level
+data and cannot be released publicly** — they exist only in the private
+repository, so `build_figure4_panels.py` cannot be run from this public copy.
+The committed `figure4_revised_data.csv` is the aggregate (non-individual)
+summary it produces. See [Inputs NOT in this repository](#inputs-not-in-this-repository).
 
 ## Build pipeline (dependency chain)
 
