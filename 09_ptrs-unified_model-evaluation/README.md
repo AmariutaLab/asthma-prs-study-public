@@ -68,8 +68,7 @@ A fifth notebook, **`summary_table_and_plots.ipynb`**, reads the saved
 predictions from all four and produces the cross-category comparison table
 (`summary_comparison_table.csv`), consumed by `build_supplementary_tables.py`.
 (Its former violin + pairwise-P outputs were removed — those figures are now
-built by the Figure 4 pipeline in
-[`07_focus-finemapping/figure_scripts/`](../07_focus-finemapping/figure_scripts/).)
+built by the Figure 4 pipeline in [`figure_scripts/`](figure_scripts/).)
 
 ## Notebooks
 
@@ -96,7 +95,7 @@ Direct (PRS-CSx) + Random Forest (tuned)
 ```
 
 The Figure-4C pairwise bootstrap comparisons anchored on this rank-1 model
-(computed by `07_focus-finemapping/figure_scripts/build_figure4_panels.py`,
+(computed by `figure_scripts/build_figure4_panels.py`,
 Panel C):
 
 | Comparison | ΔAUC | one-sided P |

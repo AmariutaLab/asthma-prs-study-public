@@ -1,10 +1,11 @@
-# Figure-building scripts
+# Figure 4 — build scripts
 
-Scripts that render the manuscript's **Figure 3** (FOCUS fine-mapping) and
-**Figure 4** (integrated PRS + PTRS model evaluation). Figure 4 lives here for
-historical reasons; its data comes from [`09_ptrs-unified_model-evaluation/`](../../09_ptrs-unified_model-evaluation/).
+Scripts that render the manuscript's **Figure 4** (integrated PRS + PTRS model
+evaluation). Rendered outputs live in [`../figures/`](../figures/); the
+per-sample prediction inputs are in [`../data/predictions/`](../data/) (this
+module).
 
-## Figure 4 — build pipeline (dependency chain)
+## Build pipeline (dependency chain)
 
 Three scripts, run in order:
 
