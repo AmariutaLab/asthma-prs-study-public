@@ -301,6 +301,11 @@ def violin_row(ax, row_models, fig, show_legend=True, violin_width=0.97,
                  [0, 1] axis (legacy behavior).
     """
     rows, labels = [], []
+    # Visual clip for z-scored violins: a small number of rare outliers
+    # (e.g. PRS-CSx has a single sample at z ≈ 6.7) can stretch the KDE tail
+    # past the P-value annotation. Winsorize at ±Z_CLIP purely for display —
+    # the raw scores are still used for AUC and Welch-P computation below.
+    Z_CLIP = 3.5
     for m in row_models:
         label, scores, y_true, _, _, _ = m
         sc = np.asarray(scores, dtype=float)
@@ -308,12 +313,20 @@ def violin_row(ax, row_models, fig, show_legend=True, violin_width=0.97,
             mu = sc.mean()
             sd = sc.std(ddof=0) or 1.0  # guard against constant-prediction models
             sc = (sc - mu) / sd
+            sc = np.clip(sc, -Z_CLIP, Z_CLIP)   # visualization-only winsorization
         for s, y in zip(sc, y_true):
             rows.append({'value': float(s), 'class': 'Case' if y == 1 else 'Control', 'model': label})
         labels.append(label)
     df = pd.DataFrame(rows)
+    # Palette anchored to Panel A's schematic boxes:
+    #   Control (blue) = multimodal (XM) box blue     -> '#7aa9db'
+    #   Case (orange)  = single-feature (TWAS/FOCUS)  -> '#fce5cd'  (tan/peach,
+    #     sampled from the "Single tissue/cell-type gene-level" box background
+    #     in figure4_editable_fix.pptx.png).
+    _control_color = CLASS_COLORS['XM']  # '#7aa9db'
+    _case_color    = '#fce5cd'           # Panel A single-feature box background
     sns.violinplot(data=df, x='model', y='value', hue='class', split=True, inner='quartile',
-                   cut=0, palette={'Control': CB[0], 'Case': CB[1]},
+                   cut=0, palette={'Control': _control_color, 'Case': _case_color},
                    order=labels, hue_order=['Control', 'Case'], ax=ax,
                    linewidth=0.9, width=violin_width)
     # Always remove the default seaborn legend — we either build our own (split,
@@ -334,9 +347,9 @@ def violin_row(ax, row_models, fig, show_legend=True, violin_width=0.97,
         # "Inner lines = Q1/Q2/Q3" and "AUC = mean ± SD across 100 iters" live
         # in the caption.
         strip_handles = [
-            mpatches.Patch(facecolor=CB[0], edgecolor='black', linewidth=0.5,
+            mpatches.Patch(facecolor=_control_color, edgecolor='black', linewidth=0.5,
                            label='Control'),
-            mpatches.Patch(facecolor=CB[1], edgecolor='black', linewidth=0.5,
+            mpatches.Patch(facecolor=_case_color, edgecolor='black', linewidth=0.5,
                            label='Case'),
             Line2D([], [], color='none', marker='', linestyle='',
                    label='***  p < 0.001'),
@@ -350,7 +363,9 @@ def violin_row(ax, row_models, fig, show_legend=True, violin_width=0.97,
         fig.legend(
             handles=strip_handles,
             loc='lower center',
-            bbox_to_anchor=(0.5, 0.005),
+            # Lift legend slightly off the very-bottom edge so it doesn't
+            # crowd the two-line x-tick labels above it.
+            bbox_to_anchor=(0.5, 0.02),
             bbox_transform=fig.transFigure,
             ncol=len(strip_handles),
             fontsize=11, frameon=True, framealpha=0.95,
@@ -365,11 +380,18 @@ def violin_row(ax, row_models, fig, show_legend=True, violin_width=0.97,
     # sits inside [-3, +3], so we anchor the plot from -3.5 to +3.5 and
     # place AUC/P annotations in a headroom band above the violins.
     if standardize == 'zscore':
-        ax.set_ylim(-3.8, 5.6)
+        # Two annotation rows share the headroom above the violins:
+        #   * P-value / ns row at y_pval — placed with ≥1 z-unit clearance
+        #     above the tallest observed violin tail (~z=3.5), so no
+        #     collision with the top of the violin.
+        #   * AUC bounding-box row at y_auc — placed with ~1 z-unit clearance
+        #     above y_pval and ~0.4 z-units below the top of the axis, so no
+        #     collision with the P-value row and no clipping at the top.
+        ax.set_ylim(-3.6, 7.4)
         ax.set_yticks([-3, -2, -1, 0, 1, 2, 3])
         ax.set_yticklabels(['-3', '-2', '-1', '0', '1', '2', '3'])
-        y_auc  = 5.20    # AUC bounding-box top (fits inside the -3.8..5.6 axis)
-        y_pval = 3.85    # P-value line just above the highest expected violin
+        y_auc  = 6.9
+        y_pval = 4.7
     else:
         # Raw predicted-probability axis (legacy).
         ax.set_ylim(0.0, 1.18)
@@ -408,10 +430,17 @@ def violin_row(ax, row_models, fig, show_legend=True, violin_width=0.97,
 # layout but much shorter vertically. violin_width=0.80 packs violins close to
 # each other while leaving a hairline gap. The two-block legend goes BELOW the
 # axes (not to the right), so we use almost the full figure width for the plot.
-figB = plt.figure(figsize=(18, 4.8))
-# [left, bottom, width, height] — only ~16% reserved at bottom for x-labels +
-# single horizontal legend strip; plot itself gets ~73% of the figure height.
-ax_b = figB.add_axes([0.05, 0.18, 0.93, 0.70])
+# Reduce the vertical canvas by ~25% vs the original — the z-standardized
+# violins live in a compact [-3, +3] envelope, so a shorter panel works. The
+# bottom band is generous enough to fit the two-line x-tick labels AND the
+# horizontal legend strip with a visible gap between them.
+figB = plt.figure(figsize=(18, 3.7))
+# [left, bottom, width, height] — bottom band (~36% of figure) holds:
+#   - the axes' x-tick labels (two lines each, ~0.55 in tall)
+#   - a clear gap
+#   - the horizontal legend strip (~0.30 in tall)
+# so 3.7*0.36 = ~1.33 in vertical budget below the axes, comfortably absorbing both.
+ax_b = figB.add_axes([0.055, 0.36, 0.93, 0.53])
 # Panel B column order (per PI request):
 #   PRS-CS, PRS-CSx -> TWAS P+T (T, CT) -> MA-FOCUS (T, CT) -> Unified (T, CT) -> Cross-modal (CS, CSx)
 _PANEL_B_ORDER = ['PRS_CS', 'PRS_CSx',

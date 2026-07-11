@@ -60,19 +60,70 @@ LABEL_FONT_PATH_CANDIDATES = [
     '/Library/Fonts/Arial.ttf',
     '/System/Library/Fonts/Supplemental/Arial.ttf',
 ]
+# Prefer a genuinely bold face for the panel letters (A, B, C, D). Falls back to
+# the regular candidates above if none exist on this system.
+LABEL_FONT_BOLD_CANDIDATES = [
+    '/System/Library/Fonts/Supplemental/Arial Bold.ttf',
+    '/Library/Fonts/Arial Bold.ttf',
+    '/System/Library/Fonts/HelveticaNeue.ttc',   # supports Bold variants via index=1
+    '/System/Library/Fonts/Helvetica.ttc',       # index=1 = "Helvetica Bold"
+]
 
-label_font = None
-for p in LABEL_FONT_PATH_CANDIDATES:
-    if Path(p).exists():
+def _load_font(candidates, size, prefer_bold_index=False):
+    for p in candidates:
+        if not Path(p).exists(): continue
         try:
-            label_font = ImageFont.truetype(p, LABEL_FONT_SZ)
-            print(f"Using font: {p}")
-            break
+            if prefer_bold_index and p.endswith('.ttc'):
+                # For .ttc collections, index=1 is typically the Bold face.
+                return ImageFont.truetype(p, size, index=1), p
+            return ImageFont.truetype(p, size), p
         except Exception:
             continue
-if label_font is None:
-    label_font = ImageFont.load_default()
-    print("WARNING: falling back to PIL default font")
+    return None, None
+
+# Pair the bold letter font with the regular title font from the SAME family so
+# their vertical metrics (ascender / cap-height / baseline) match — otherwise
+# mixing Arial-Bold with Helvetica-Regular leaves the letter sitting visibly
+# lower than the title text next to it.
+def _paired_bold_regular(size):
+    """Return (bold_font, regular_font, family_desc). Try Helvetica.ttc
+    (indices 1=bold, 0=regular) first, then a HelveticaNeue.ttc, then
+    Arial Bold + Arial Regular (paths).  If nothing matches, both fall
+    back to the default bold candidate."""
+    # 1) Helvetica.ttc — both weights in one collection (perfect metric match)
+    for ttc_path in ['/System/Library/Fonts/Helvetica.ttc',
+                     '/System/Library/Fonts/HelveticaNeue.ttc']:
+        if Path(ttc_path).exists():
+            try:
+                b = ImageFont.truetype(ttc_path, size, index=1)  # Bold
+                r = ImageFont.truetype(ttc_path, size, index=0)  # Regular
+                return b, r, f'{ttc_path} (index 1 bold / index 0 regular)'
+            except Exception:
+                continue
+    # 2) Arial Bold + Arial Regular (different files but matching family)
+    arial_bold = '/System/Library/Fonts/Supplemental/Arial Bold.ttf'
+    arial_reg  = '/System/Library/Fonts/Supplemental/Arial.ttf'
+    if Path(arial_bold).exists() and Path(arial_reg).exists():
+        try:
+            return (ImageFont.truetype(arial_bold, size),
+                    ImageFont.truetype(arial_reg, size),
+                    'Arial Bold + Arial Regular')
+        except Exception:
+            pass
+    # 3) Last resort — use whatever bold we can find for both
+    b, _ = _load_font(LABEL_FONT_BOLD_CANDIDATES, size, prefer_bold_index=True)
+    if b is None:
+        b, _ = _load_font(LABEL_FONT_PATH_CANDIDATES, size)
+    if b is None:
+        b = ImageFont.load_default()
+    return b, b, 'FALLBACK (bold used for both — regular font unavailable)'
+
+
+label_letter_font, label_title_font, _font_family_desc = _paired_bold_regular(LABEL_FONT_SZ)
+print(f"Panel-label font pair: {_font_family_desc}  ({LABEL_FONT_SZ}px)")
+
+# Back-compat alias (still used by some downstream code paths in this script).
+label_font = label_letter_font
 
 
 # --- Load and prep Panel A ---------------------------------------------------
@@ -152,26 +203,42 @@ draw = ImageDraw.Draw(canvas)
 LABEL_X_LEFT = PAD_HORIZ + LABEL_LEFT_OFFSET  # consistent x for A, B, C
 LABEL_X_RIGHT = PAD_HORIZ + half_w + PAD_HORIZ + LABEL_LEFT_OFFSET  # for D
 
-def draw_label(text, x, y):
-    draw.text((x, y), text, fill='black', font=label_font)
+def draw_label(letter, title, x, y):
+    """Draw a panel label as a bold letter followed by a regular-weight title.
+    Only the letter (A/B/C/D) is bolded; the descriptive title text stays
+    regular weight. Both draws use anchor='la' (left-ascender) so their
+    ascender lines coincide — otherwise mixed weights of the same family can
+    still sit on visually different baselines when PIL's default anchor
+    falls back to bounding-box top."""
+    draw.text((x, y), letter, fill='black', font=label_letter_font, anchor='la')
+    # Measure the letter box so the title starts just after it, plus a
+    # ~half-em gap for visual separation.
+    try:
+        bb = draw.textbbox((x, y), letter, font=label_letter_font, anchor='la')
+        letter_w = bb[2] - bb[0]
+    except (AttributeError, TypeError):  # PIL < 8.0
+        letter_w = label_letter_font.getsize(letter)[0]
+    gap = LABEL_FONT_SZ // 2
+    draw.text((x + letter_w + gap, y), title, fill='black',
+              font=label_title_font, anchor='la')
 
 y = PAD_VERT
 # Panel A
-draw_label('A   Model construction and evaluation overview', LABEL_X_LEFT, y)
+draw_label('A', 'Model construction and evaluation overview', LABEL_X_LEFT, y)
 y += LABEL_HEIGHT
 canvas.paste(panel_a, (PAD_HORIZ, y))
 y += panel_a.height + PAD_VERT
 
 # Panel B
-draw_label('B   Predicted-probability distributions on CAMP-Balanced',
+draw_label('B', 'Predicted-probability distributions on CAMP-Balanced',
            LABEL_X_LEFT, y)
 y += LABEL_HEIGHT
 canvas.paste(panel_b, (PAD_HORIZ, y))
 y += panel_b.height + PAD_VERT
 
 # Panel C + D
-draw_label('C   Pairwise AUC comparison', LABEL_X_LEFT, y)
-draw_label('D   Top-quartile case enrichment', LABEL_X_RIGHT, y)
+draw_label('C', 'Pairwise AUC comparison', LABEL_X_LEFT, y)
+draw_label('D', 'Top-quartile case enrichment', LABEL_X_RIGHT, y)
 y += LABEL_HEIGHT
 canvas.paste(panel_c, (PAD_HORIZ, y))
 canvas.paste(panel_d, (PAD_HORIZ + half_w + PAD_HORIZ, y))
