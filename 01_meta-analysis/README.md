@@ -61,7 +61,7 @@ layout) so it runs unchanged on a laptop or the server.
 
 | Script | Output | Description |
 |--------|--------|-------------|
-| `build_manhattan_plot.py` | `figure2_manhattan_labeled.png/.svg` | GBMI+TAGC EUR meta-analysis Manhattan (Figure 2 overview): genome-wide-significant peaks + curated asthma-locus gene labels. Reads the full sumstats (`meta_analysis_p_complete.txt.gz`, ~23M SNPs) + nearest-gene labels; output **not committed** (large-data run). |
+| `build_manhattan_plot.py` | [`figures/figure2_manhattan_labeled.png`](figures/figure2_manhattan_labeled.png) / `.svg` | GBMI+TAGC EUR meta-analysis Manhattan (Figure 2 overview): genome-wide-significant peaks + curated asthma-locus gene labels over 23,136,851 SNPs (23,145 genome-wide significant). Reads the full sumstats (`meta_analysis_p_complete.txt.gz`) + nearest-gene labels; committed under [`figures/`](figures/). |
 | `build_ld_reference_heatmap.py` | [`figures/ld_reference_1kg.png`](figures/ld_reference_1kg.png) / `.pdf` | Lower-triangle r² LD heatmap over the top-N cis-SNPs (ranked by max \|FUSION eQTL weight\| across GTEx tissues) at the *GSDMB* / 17q21 locus, using the 1000G EUR reference panel (`1000G.EUR.17`). Committed under [`figures/`](figures/). |
 
 ### `build_ld_reference_heatmap.py` — environment variables
