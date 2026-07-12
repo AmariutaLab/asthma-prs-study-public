@@ -27,7 +27,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch, Rectangle
+from matplotlib.patches import FancyBboxPatch, Rectangle, FancyArrowPatch
 
 # Editable text in SVG / PDF -- keep glyph data, don't outline to paths
 matplotlib.rcParams["svg.fonttype"] = "none"
@@ -37,12 +37,16 @@ matplotlib.rcParams["pdf.fonttype"] = 42
 # CONFIG -- edit these paths for your environment
 # =============================================================================
 ROOT = Path(os.environ.get("HARTWELL_ROOT", "/Users/nancyh/Desktop/hartwell"))
+# Default to the extracted CSV bundled next to this script (data/), so a fresh
+# clone renders out of the box; override with GSDMB_WEIGHTS_CSV to point at a
+# freshly re-extracted file (see extract_gtex_weights.R / data/README.md).
 WEIGHTS_CSV = Path(os.environ.get(
-    "GSDMB_WEIGHTS_CSV", Path(tempfile.gettempdir()) / "gsdmb_blup4.csv"))
+    "GSDMB_WEIGHTS_CSV", Path(__file__).with_name("data") / "gsdmb_blup4.csv"))
 OUTDIR = Path(os.environ.get("FIG_OUTDIR", ROOT / "FOCUS"))
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
-GENE = "GSDMB"
+GENE = "GSDMB"                                                   # front card gene
+GENE_TARGETS = ["GSDMB", "SMAD3", "TSLP"]                        # labels shown below the stack
 TCOLS = ["Lung", "Whole_Blood", "Esophagus_Mucosa", "Thyroid"]   # 4 columns shown
 SHORT = {"Lung": "Lung", "Whole_Blood": "Blood",
          "Esophagus_Mucosa": "Esoph.", "Thyroid": "Thyroid"}
@@ -80,7 +84,9 @@ def cellval(i, j):
 
 
 # =============================================================================
-# Draw the card stack + table
+# Draw the card stack + table (matches build_eqtl_weight_cards_1k1k.py layout;
+# gene labels + "✕ GSDMB" + "Gene set A" side-strip intentionally omitted so
+# annotations can be added by hand downstream).
 # =============================================================================
 TEAL_HDR, TEAL_CELL, TEAL_LAB = "#cfe8e4", "#eaf6f4", "#dcefeb"
 EDGE, TXT, HDRTXT = "#9ec9c3", "#37474f", "#2f6f68"
@@ -92,17 +98,13 @@ ax.set_xlim(0, 100)
 ax.set_ylim(0, 100)
 ax.axis("off")
 
-for off in [(10, -8), (5, -4)]:                          # faint back cards
+for off in [(10, -8), (5, -4)]:                          # two faint back cards
     ax.add_patch(FancyBboxPatch((14 + off[0], 14 + off[1]), 80, 74,
                  boxstyle="round,pad=0,rounding_size=3", linewidth=1.1,
                  edgecolor=EDGE, facecolor="#f1faf8", zorder=1))
-ax.add_patch(FancyBboxPatch((14, 14), 80, 74, boxstyle="round,pad=0,rounding_size=3",
+ax.add_patch(FancyBboxPatch((14, 14), 80, 74,
+             boxstyle="round,pad=0,rounding_size=3",
              linewidth=1.3, edgecolor="#6fb3aa", facecolor="white", zorder=5))
-ax.text(18, 92, "✕", fontsize=8, color="#8aa", zorder=6, va="center")
-ax.text(22, 92, GENE, fontsize=10, fontweight="bold", fontstyle="italic",
-        color=HDRTXT, zorder=6, va="center")
-ax.text(7.5, 52, "Gene set A", rotation=90, fontsize=7.5, color="#6b8e89",
-        ha="center", va="center", zorder=6)
 
 x0, y0, x1, y1 = 19, 19, 90, 84
 nC, nR = 5, 5

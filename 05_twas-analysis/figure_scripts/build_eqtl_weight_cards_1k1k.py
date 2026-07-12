@@ -38,8 +38,11 @@ matplotlib.rcParams["pdf.fonttype"] = 42
 # CONFIG -- edit these paths for your environment
 # =============================================================================
 ROOT = Path(os.environ.get("HARTWELL_ROOT", "/Users/nancyh/Desktop/hartwell"))
+# Default to the extracted CSV bundled next to this script (data/), so a fresh
+# clone renders out of the box; override with ONEK1K_WEIGHTS_CSV to point at a
+# freshly re-extracted file (see extract_onek1k_weights.R / data/README.md).
 WEIGHTS_CSV = Path(os.environ.get(
-    "ONEK1K_WEIGHTS_CSV", Path(tempfile.gettempdir()) / "hla_dpb1_onek1k_blup.csv"))
+    "ONEK1K_WEIGHTS_CSV", Path(__file__).with_name("data") / "hla_dpb1_onek1k_blup.csv"))
 OUTDIR = Path(os.environ.get("FIG_OUTDIR", ROOT / "FOCUS"))
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
@@ -108,11 +111,8 @@ for off in [(10, -8), (5, -4)]:                          # faint back cards
                  edgecolor=EDGE, facecolor="#f1faf8", zorder=1))
 ax.add_patch(FancyBboxPatch((14, 14), 80, 74, boxstyle="round,pad=0,rounding_size=3",
              linewidth=1.3, edgecolor="#6fb3aa", facecolor="white", zorder=5))
-ax.text(18, 92, "✕", fontsize=8, color="#8aa", zorder=6, va="center")
-ax.text(22, 92, GENE, fontsize=10, fontweight="bold", fontstyle="italic",
-        color=HDRTXT, zorder=6, va="center")
-ax.text(7.5, 52, "Gene set A", rotation=90, fontsize=7.5, color="#6b8e89",
-        ha="center", va="center", zorder=6)
+# in-card "✕ HLA-DPB1" title + "Gene set A" side strip intentionally omitted so
+# annotations can be added by hand downstream.
 
 x0, y0, x1, y1 = 19, 19, 90, 84
 nC, nR = 5, 5
