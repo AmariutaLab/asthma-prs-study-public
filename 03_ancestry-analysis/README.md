@@ -107,3 +107,27 @@ Per *K*, we generate the following output files:
 - `${BASENAME}.${K}.Q` — The Ancestry Proportion Matrix (i.e., one row per sample)
 - `${BASENAME}.${K}.P` — Allele Frequency Matrix (i.e., one row per variant)
 - Cross-Validation Error printed to `stdout` (i.e., used to select optimal *K*)
+
+## Figures
+
+[`figure_scripts/build_figure1_admixture.py`](figure_scripts/build_figure1_admixture.py)
+renders **Figure 1, Panel B** — the *K*=5 ADMIXTURE ancestry-proportion plot:
+seven side-by-side stacked-bar panels (one bar per individual) for the GACRS and
+CAMP study cohorts plus the five 1000 Genomes super-populations (AFR, AMR, EAS,
+EUR, SAS) as references, each panel sorted by descending proportion and scaled to
+its sample count. Rendered output:
+[`figures/figure1_admixture.svg`](figures/figure1_admixture.svg).
+
+| Variable | Default | Meaning |
+|----------|---------|---------|
+| `FIG1_DATA_ROOT` | `…/hartwell-asthma-main/local-computer-files/figure-1/data` | Base dir the input default hangs off |
+| `ADMIXTURE_CSV` | `$FIG1_DATA_ROOT/admixture-results/…admixture-proportion-all-pop.csv` | Per-individual *K*=5 proportions (`IID, Population, AFR…SAS`), aggregated from the `.Q` matrices of Step 02 |
+| `FIG_OUTDIR` | `../figures` | Where the SVG/PNG are written |
+
+> [!IMPORTANT]
+> `ADMIXTURE_CSV` is **individual-level** data — it is keyed by sample `IID` for
+> the GACRS/CAMP cohorts — so it is **not** committed to this repository; it
+> lives only in the private repo. The plotting script and the rendered aggregate
+> figure are public, but the per-sample input is not.
+
+Requires: `pandas`, `matplotlib`.

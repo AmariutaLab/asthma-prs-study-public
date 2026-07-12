@@ -61,8 +61,23 @@ layout) so it runs unchanged on a laptop or the server.
 
 | Script | Output | Description |
 |--------|--------|-------------|
+| `build_figure1_manhattan.py` | [`figures/figure1_manhattan_labeled.svg`](figures/figure1_manhattan_labeled.svg) / `.png` | **Figure 1, Panel A** — GBMI+TAGC meta-analysis Manhattan: alternating-grey autosomes, dashed 5e-8 line, index-variant loci highlighted in orange-red with top-3 nearest-gene labels. Reads the formatted sumstats + dbSNP (b151) annotations + the PLINK clumping result. Committed under [`figures/`](figures/). |
 | `build_manhattan_plot.py` | [`figures/figure2_manhattan_labeled.png`](figures/figure2_manhattan_labeled.png) / `.svg` | GBMI+TAGC EUR meta-analysis Manhattan (Figure 2 overview): genome-wide-significant peaks + curated asthma-locus gene labels over 23,136,851 SNPs (23,145 genome-wide significant). Reads the full sumstats (`meta_analysis_p_complete.txt.gz`) + nearest-gene labels; committed under [`figures/`](figures/). |
 | `build_ld_reference_heatmap.py` | [`figures/ld_reference_1kg.png`](figures/ld_reference_1kg.png) / `.pdf` | Lower-triangle r² LD heatmap over the top-N cis-SNPs (ranked by max \|FUSION eQTL weight\| across GTEx tissues) at the *GSDMB* / 17q21 locus, using the 1000G EUR reference panel (`1000G.EUR.17`). Committed under [`figures/`](figures/). |
+
+### `build_figure1_manhattan.py` — environment variables
+
+| Variable | Default | Meaning |
+|----------|---------|---------|
+| `FIG1_DATA_ROOT` | `…/hartwell-asthma-main/local-computer-files/figure-1/data` | Base dir the input defaults hang off |
+| `META_SUMSTATS` | `$FIG1_DATA_ROOT/summary-stats/metaanalysis_merged-output.formatted.pval.txt` | Formatted meta-analysis sumstats (aggregate GWAS) |
+| `DBSNP_ANNOT` | `$FIG1_DATA_ROOT/human_9606_b151_GRCh37p13.filt-metanaalysis-var.txt` | dbSNP b151/GRCh37 annotations (for GENEINFO gene symbols) |
+| `CLUMP_FILE` | `$FIG1_DATA_ROOT/plink-clumping-results/VERBOSE_metaanalysis-index-var.allchr.clump_r2-0.1_1000-kb.clumped` | PLINK clumping result (r² 0.1 / 1 Mb) → index variants |
+| `FIG_OUTDIR` | `../figures` | Where the SVG/PNG (+ index-variant TSV) are written |
+
+All inputs are aggregate GWAS/annotation data (not individual-level); they are
+large and live on the server, so they are not committed. Requires: `pandas`,
+`numpy`, `matplotlib`.
 
 ### `build_ld_reference_heatmap.py` — environment variables
 
