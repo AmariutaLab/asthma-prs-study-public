@@ -116,7 +116,9 @@ seven side-by-side stacked-bar panels (one bar per individual) for the GACRS and
 CAMP study cohorts plus the five 1000 Genomes super-populations (AFR, AMR, EAS,
 EUR, SAS) as references, each panel sorted by descending proportion and scaled to
 its sample count. Rendered output:
-[`figures/figure1_admixture.svg`](figures/figure1_admixture.svg).
+[`figures/figure1_admixture.svg`](figures/figure1_admixture.svg). The assembled
+Figure 1 (this Panel B + the Panel A Manhattan) is committed in module 01 as
+[`../01_meta-analysis/figures/figure1_combined.png`](../01_meta-analysis/figures/figure1_combined.png).
 
 | Variable | Default | Meaning |
 |----------|---------|---------|
