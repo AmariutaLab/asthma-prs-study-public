@@ -53,6 +53,42 @@ Beta values are always relative to A1.
 | `formatted_meta_analysis.txt` | SNP, Z, A2, A1 | ~24M | TWAS / FOCUS |
 | `meta_analysis_p_complete.txt.gz` | SNP, A1, A2, Z, #CHR, POS, BETA, SE, p_value, -log10(P-Value) | ~24M | Clumping / PRS |
 
+## Figures
+
+Standalone plotting scripts live in [`figure_scripts/`](figure_scripts/). Each
+reads its paths from environment variables (defaults point at the original lab
+layout) so it runs unchanged on a laptop or the server.
+
+| Script | Output | Description |
+|--------|--------|-------------|
+| `build_manhattan_plot.py` | `figure2_manhattan_labeled.png/.svg` | GBMI+TAGC EUR meta-analysis Manhattan (Figure 2 overview): genome-wide-significant peaks + curated asthma-locus gene labels. Reads the full sumstats (`meta_analysis_p_complete.txt.gz`, ~23M SNPs) + nearest-gene labels; output **not committed** (large-data run). |
+| `build_ld_reference_heatmap.py` | [`figures/ld_reference_1kg.png`](figures/ld_reference_1kg.png) / `.pdf` | Lower-triangle r² LD heatmap over the top-N cis-SNPs (ranked by max \|FUSION eQTL weight\| across GTEx tissues) at the *GSDMB* / 17q21 locus, using the 1000G EUR reference panel (`1000G.EUR.17`). Committed under [`figures/`](figures/). |
+
+### `build_ld_reference_heatmap.py` — environment variables
+
+| Variable | Default | Meaning |
+|----------|---------|---------|
+| `HARTWELL_ROOT` | `/Users/nancyh/Desktop/hartwell` | Base dir the other defaults hang off |
+| `GSDMB_WEIGHTS_CSV` | `$TMPDIR/gsdmb_blup4.csv` | Long CSV (`tissue, snp, weight`) from `05_twas-analysis/figure_scripts/extract_gtex_weights.R` |
+| `LDREF_BFILE` | `$HARTWELL_ROOT/TWAS/LDREF/1000G.EUR.17` | FUSION 1000G EUR LD reference prefix (chr17) |
+| `PLINK_BIN` | `$HARTWELL_ROOT/plink` | PLINK 1.9 binary |
+| `FIG_OUTDIR` | `$HARTWELL_ROOT/FOCUS` | Where the PNG/PDF are written |
+| `LD_TOP_N` | `26` | Number of top-\|weight\| SNPs in the heatmap |
+| `LOCUS_GENE` / `LOCUS_REGION` | `GSDMB` / `17q21` | Labels in the plot title |
+
+Pipeline: rank cis-SNPs by max \|weight\| → `plink --r square` + `--write-snplist`
+→ mask the upper triangle → matplotlib r² heatmap (mean off-diagonal r² ≈ 0.27
+for the committed GSDMB panel). To regenerate the committed figure:
+
+```bash
+GSDMB_WEIGHTS_CSV=path/to/gsdmb_blup4.csv \
+LDREF_BFILE=path/to/1000G.EUR.17 PLINK_BIN=$(which plink) \
+FIG_OUTDIR=01_meta-analysis/figures \
+python 01_meta-analysis/figure_scripts/build_ld_reference_heatmap.py
+```
+
+Requires: `pandas`, `numpy`, `matplotlib`, plus PLINK 1.9 on `PLINK_BIN`.
+
 ## Testing
 
 ```bash
