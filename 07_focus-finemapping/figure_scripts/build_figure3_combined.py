@@ -67,15 +67,22 @@ def _content_crop(img):
     return img.crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
 
 
-def fit_into(canvas, img, box, pad=6):
-    """Crop to content, resize to fit the box (preserve aspect), then paste at the
-    box's TOP-LEFT (+pad) so every panel's content aligns to a common top-left."""
-    img = _content_crop(img)
+def _fit_height(img, box, pad=6):
+    """Height the (already content-cropped) image would take if fit into its box
+    preserving aspect (min of width- and height-limited scaling)."""
     l, t, r, b = box
     cw, ch = (r - l) - 2 * pad, (b - t) - 2 * pad
-    pw, ph = img.size
-    s = min(cw / pw, ch / ph)
-    nw, nh = max(1, int(round(pw * s))), max(1, int(round(ph * s)))
+    return img.height * min(cw / img.width, ch / img.height)
+
+
+def place(canvas, img, box, target_h, pad=6):
+    """Scale the image to `target_h` (preserving aspect) and paste at the box's
+    TOP-LEFT (+pad). Panels are processed in left/right row pairs and given the
+    SAME target height, so the two panels in a row share top and bottom edges
+    (their letters stay left-aligned per column)."""
+    l, t, r, b = box
+    s = target_h / img.height
+    nw, nh = max(1, int(round(img.width * s))), max(1, int(round(img.height * s)))
     img2 = img.resize((nw, nh), Image.LANCZOS)
     canvas.paste((255, 255, 255), (l, t, r, b))
     canvas.paste(img2, (l + pad, t + pad))
@@ -84,12 +91,21 @@ def fit_into(canvas, img, box, pad=6):
 
 def main():
     canvas = Image.new("RGB", CANVAS, (255, 255, 255))
-    for name, box in PANELS:
+    imgs = {}
+    for name, _box in PANELS:
         path = FIGDIR / name
         if not path.exists():
             raise SystemExit(f"missing panel image: {path}")
-        nw, nh = fit_into(canvas, Image.open(path).convert("RGB"), box)
-        print(f"  {name:34s} -> box {box}  pasted {nw}x{nh}")
+        imgs[name] = _content_crop(Image.open(path).convert("RGB"))
+    # Process in left/right row pairs; align each pair to the SMALLER natural fit
+    # height so the panel already filling its column width (e.g. A, D) is unchanged
+    # and its taller-aspect neighbour is shrunk to match -> bottoms line up.
+    for i in range(0, len(PANELS), 2):
+        (nl, bl), (nr, br) = PANELS[i], PANELS[i + 1]
+        target_h = min(_fit_height(imgs[nl], bl), _fit_height(imgs[nr], br))
+        for name, box in (PANELS[i], PANELS[i + 1]):
+            nw, nh = place(canvas, imgs[name], box, target_h)
+            print(f"  {name:34s} -> box {box}  pasted {nw}x{nh}")
     canvas.save(OUT_PNG)
     canvas.save(OUT_PDF, "PDF", resolution=float(PDF_DPI))
     print(f"saved {OUT_PNG}\n      {OUT_PDF}  ({CANVAS[0]}x{CANVAS[1]})")
