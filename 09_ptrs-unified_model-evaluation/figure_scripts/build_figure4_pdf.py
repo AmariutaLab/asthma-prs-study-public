@@ -230,7 +230,7 @@ canvas.paste(panel_a, (PAD_HORIZ, y))
 y += panel_a.height + PAD_VERT
 
 # Panel B
-draw_label('B', 'Predicted-probability distributions on CAMP-Balanced',
+draw_label('B', 'Normalized Predicted Probability Distributions on CAMP Balanced',
            LABEL_X_LEFT, y)
 y += LABEL_HEIGHT
 canvas.paste(panel_b, (PAD_HORIZ, y))

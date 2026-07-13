@@ -336,7 +336,8 @@ def violin_row(ax, row_models, fig, show_legend=True, violin_width=0.97,
         _default_leg.remove()
     ax.set_xlabel('')
     if standardize == 'zscore':
-        ax.set_ylabel('Standardized predicted probability (z)', fontsize=13)
+        # Short y-label so nothing gets clipped at the left edge of the figure.
+        ax.set_ylabel('Normalized risk score', fontsize=13)
     else:
         ax.set_ylabel('Predicted probability of asthma', fontsize=13)
     ax.set_xlim(-0.55, len(row_models) - 0.45)
